@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staking - TCG Vault Protocol</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
+                    <path d="M7 8L7 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M12 8L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M17 8L17 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                TCG Vault Protocol
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="breaks.html">Live Breaks</a></li>
+                <li><a href="breaks.html">Breaks</a></li>
+                <li><a href="vault.html">Vault</a></li>
+                <li><a href="marketplace.html">Fractions</a></li>
+                <li><a href="staking.html" class="active">Staking</a></li>
+                <li><a href="token.html">Token</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="transparency.html">Transparency</a></li>
+            </ul>
+            <a href="breaks.html" class="nav-cta">Join a Break</a>
+        </div>
+    </nav>
+
+    <!-- Staking Header -->
+    <section class="staking-header" style="padding-top: 8rem;">
+        <div class="container">
+            <div class="section-header">
+                <h2>$VAULT Staking</h2>
+                <p>Stake $VAULT, earn $eVAULT rewards. Use rewards to buy packs, purchase fractions, and participate in the ecosystem.</p>
+            </div>
+            
+            <!-- Stats Bar -->
+            <div class="staking-stats-bar">
+                <div class="staking-stat">
+                    <div class="staking-stat-label">Total Value Locked</div>
+                    <div class="staking-stat-value" id="tvlAmount">£0</div>
+                </div>
+                <div class="staking-stat">
+                    <div class="staking-stat-label">Total Stakers</div>
+                    <div class="staking-stat-value" id="totalStakers">0</div>
+                </div>
+                <div class="staking-stat">
+                    <div class="staking-stat-label">Rewards Distributed</div>
+                    <div class="staking-stat-value" id="rewardsDistributed">£0</div>
+                </div>
+                <div class="staking-stat">
+                    <div class="staking-stat-label">Your $eVAULT Balance</div>
+                    <div class="staking-stat-value accent" id="eVAULTBalance">0</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Staking Tiers -->
+    <section class="staking-tiers">
+        <div class="container">
+            <h3 style="text-align: center; margin-bottom: 2rem;">Choose Your Staking Tier</h3>
+            
+            <div class="tiers-grid">
+                <!-- 3 Month Tier -->
+                <div class="tier-card">
+                    <div class="tier-header">
+                        <div class="tier-icon">🥉</div>
+                        <h4>3 Month Stake</h4>
+                        <div class="tier-apr">6% APR</div>
+                    </div>
+                    <div class="tier-body">
+                        <div class="tier-details">
+                            <div class="tier-detail">
+                                <span>Lock Period</span>
+                                <span>90 Days</span>
+                            </div>
+                            <div class="tier-detail">
+                                <span>Rewards Unlock</span>
+                                <span>Weekly (Thursdays)</span>
+                            </div>
+                            <div class="tier-detail">
+                                <span>Early Unstake</span>
+                                <span>10% Penalty</span>
+                            </div>
+                        </div>
+                        <div class="tier-example">
+                            <small>Example: Stake 10,000 $VAULT → Earn ~115 $eVAULT over 3 months</small>
+                        </div>
+                        <button class="btn-primary btn-full" onclick="openStakeModal(0)">Stake Now</button>
+                    </div>
+                </div>
+
+                <!-- 6 Month Tier -->
+                <div class="tier-card">
+                    <div class="tier-header">
+                        <div class="tier-icon">🥈</div>
+                        <h4>6 Month Stake</h4>
+                        <div class="tier-apr">9% APR</div>
+                    </div>
+                    <div class="tier-body">
+                        <div class="tier-details">
+                            <div class="tier-detail">
+                                <span>Lock Period</span>
+                                <span>180 Days</span>
+                            </div>
+                            <div class="tier-detail">
+                                <span>Rewards Unlock</span>
+                                <span>Weekly (Thursdays)</span>
+                            </div>
+                            <div class="tier-detail">
+                                <span>Early Unstake</span>
+                                <span>10% Penalty</span>
+                            </div>
+                        </div>
+                        <div class="tier-example">
+                            <small>Example: Stake 10,000 $VAULT → Earn ~443 $eVAULT over 6 months</small>
+                        </div>
+                        <button class="btn-primary btn-full" onclick="openStakeModal(1)">Stake Now</button>
+                    </div>
+                </div>
+
+                <!-- 12 Month Tier -->
+                <div class="tier-card">
+                    <div class="tier-header">
+                        <div class="tier-icon">🥇</div>
+                        <h4>12 Month Stake</h4>
+                        <div class="tier-apr">12% APR</div>
+                    </div>
+                    <div class="tier-body">
+                        <div class="tier-details">
+                            <div class="tier-detail">
+                                <span>Lock Period</span>
+                                <span>365 Days</span>
+                            </div>
+                            <div class="tier-detail">
+                                <span>Rewards Unlock</span>
+                                <span>Weekly (Thursdays)</span>
+                            </div>
+                            <div class="tier-detail">
+                                <span>Early Unstake</span>
+                                <span>10% Penalty</span>
+                            </div>
+                        </div>
+                        <div class="tier-example">
+                            <small>Example: Stake 10,000 $VAULT → Earn ~1,200 $eVAULT over 12 months</small>
+                        </div>
+                        <button class="btn-primary btn-full" onclick="openStakeModal(2)">Stake Now</button>
+                    </div>
+                </div>
+
+                <!-- Forever Tier -->
+                <div class="tier-card featured">
+                    <div class="tier-badge">Best Value</div>
+                    <div class="tier-header">
+                        <div class="tier-icon">💎</div>
+                        <h4>Forever Stake</h4>
+                        <div class="tier-apr">24% APR</div>
+                    </div>
+                    <div class="tier-body">
+                        <div class="tier-details">
+                            <div class="tier-detail">
+                                <span>Lock Period</span>
+                                <span>10 Years / Forever</span>
+                            </div>
+                            <div class="tier-detail">
+                                <span>Rewards Unlock</span>
+                                <span>Weekly (Thursdays)</span>
+                            </div>
+                            <div class="tier-detail">
+                                <span>Early Unstake</span>
+                                <span>10% Penalty</span>
+                            </div>
+                        </div>
+                        <div class="tier-example">
+                            <small>Example: Stake 10,000 $VAULT → Earn ~2,400 $eVAULT per year forever</small>
+                        </div>
+                        <button class="btn-primary btn-full" onclick="openStakeModal(3)">Stake Now</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- User Stakes Section -->
+    <section class="user-stakes" style="background: var(--bg-secondary);">
+        <div class="container">
+            <h3 style="text-align: center; margin-bottom: 2rem;">Your Active Stakes</h3>
+            
+            <div id="userStakesList">
+                <div class="empty-state">
+                    <div class="empty-icon">📊</div>
+                    <p>No active stakes found</p>
+                    <small>Connect your wallet to view your stakes</small>
+                    <button class="btn-primary" style="margin-top: 1rem;" onclick="connectWallet()">Connect Wallet</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How $eVAULT Works -->
+    <section class="evault-info">
+        <div class="container">
+            <div class="evault-grid">
+                <div class="evault-content">
+                    <h3>What is $eVAULT?</h3>
+                    <p>$eVAULT is the ecosystem reward token earned by staking $VAULT. It's designed to be used within the TCG Vault Protocol ecosystem, creating a sustainable reward loop.</p>
+                    
+                    <ul class="evault-uses">
+                        <li>
+                            <span class="use-icon">🎴</span>
+                            <div>
+                                <strong>Buy Break Packs</strong>
+                                <span>Use $eVAULT to purchase pack slots in live breaks (5% discount)</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="use-icon">🏦</span>
+                            <div>
+                                <strong>Purchase Fractions</strong>
+                                <span>Buy fractional ownership of vaulted cards with $eVAULT</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="use-icon">🎯</span>
+                            <div>
+                                <strong>Ecosystem Only</strong>
+                                <span>$eVAULT can only be spent within the protocol, ensuring value stays in the ecosystem</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="evault-reward-calendar">
+                    <h4>Reward Unlock Schedule</h4>
+                    <p>Rewards unlock every Thursday, just before the first break of the week.</p>
+                    
+                    <div class="calendar-week">
+                        <div class="calendar-day">Mon</div>
+                        <div class="calendar-day">Tue</div>
+                        <div class="calendar-day">Wed</div>
+                        <div class="calendar-day unlock">Thu<br><small>Unlock</small></div>
+                        <div class="calendar-day active">Fri<br><small>Break</small></div>
+                        <div class="calendar-day">Sat</div>
+                        <div class="calendar-day">Sun</div>
+                    </div>
+                    
+                    <div class="next-unlock">
+                        <span>Next Unlock:</span>
+                        <span id="nextUnlockTime">Thursday, 2:00 PM UTC</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 32px; height: 32px;">
+                            <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
+                            <path d="M7 8L7 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M12 8L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M17 8L17 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        TCG Vault Protocol
+                    </a>
+                    <p>The future of trading card collecting. Break, invest, and own fractional shares of rare collectibles.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Platform</h4>
+                    <ul>
+                        <li><a href="breaks.html">Live Breaks</a></li>
+                        <li><a href="vault.html">Vault</a></li>
+                        <li><a href="marketplace.html">Marketplace</a></li>
+                        <li><a href="staking.html">Staking</a></li>
+                        <li><a href="token.html">Token</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="whitepaper.html">Whitepaper</a></li>
+                        <li><a href="transparency.html">Transparency</a></li>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">API</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Press</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 TCG Vault Protocol. All rights reserved.</p>
+                <div class="footer-legal">
+                    <a href="#">Terms</a>
+                    <a href="#">Privacy</a>
+                    <a href="#">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Stake Modal -->
+    <div id="stakeModal" class="cart-modal">
+        <div class="cart-modal-overlay" onclick="closeStakeModal()"></div>
+        <div class="cart-modal-content" style="max-width: 450px;">
+            <div class="cart-modal-header">
+                <h3>Stake $VAULT</h3>
+                <button class="close-btn" onclick="closeStakeModal()">&times;</button>
+            </div>
+            <div class="cart-modal-body">
+                <div id="stakeTierInfo" class="stake-tier-info"></div>
+                
+                <div class="stake-amount-section">
+                    <label>Amount to Stake</label>
+                    <div class="stake-input-group">
+                        <input type="number" id="stakeAmount" placeholder="0.00" min="100" step="1">
+                        <span class="input-suffix">$VAULT</span>
+                    </div>
+                    <div class="stake-balance">
+                        <span>Balance: </span>
+                        <span id="vaultBalance">0 $VAULT</span>
+                    </div>
+                </div>
+                
+                <div class="stake-calculator">
+                    <h4>Estimated Rewards</h4>
+                    <div class="calc-row">
+                        <span>Stake Amount:</span>
+                        <span id="calcStakeAmount">0 $VAULT</span>
+                    </div>
+                    <div class="calc-row">
+                        <span>APR:</span>
+                        <span id="calcAPR">6%</span>
+                    </div>
+                    <div class="calc-row">
+                        <span>Duration:</span>
+                        <span id="calcDuration">3 months</span>
+                    </div>
+                    <div class="calc-row highlight">
+                        <span>Total Rewards:</span>
+                        <span id="calcRewards">0 $eVAULT</span>
+                    </div>
+                    <div class="calc-row weekly">
+                        <span>Weekly Rewards:</span>
+                        <span id="calcWeekly">0 $eVAULT</span>
+                    </div>
+                </div>
+                
+                <div class="stake-notice">
+                    <p>⚠️ Your tokens will be locked for the duration of the stake. Early withdrawal incurs a 10% penalty.</p>
+                </div>
+                
+                <button class="btn-primary btn-full" id="confirmStakeBtn" onclick="confirmStake()">Confirm Stake</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Staking tier configurations
+        const stakingTiers = [
+            { name: '3 Month', apr: 6, duration: 90, durationText: '3 months' },
+            { name: '6 Month', apr: 9, duration: 180, durationText: '6 months' },
+            { name: '12 Month', apr: 12, duration: 365, durationText: '12 months' },
+            { name: 'Forever', apr: 24, duration: 3650, durationText: '10 years' }
+        ];
+        
+        let selectedTier = 0;
+        
+        function openStakeModal(tier) {
+            selectedTier = tier;
+            const config = stakingTiers[tier];
+            
+            document.getElementById('stakeTierInfo').innerHTML = `
+                <div class="tier-badge-large">${config.name} Stake</div>
+                <div class="tier-apr-large">${config.apr}% APR</div>
+            `;
+            
+            document.getElementById('calcAPR').textContent = config.apr + '%';
+            document.getElementById('calcDuration').textContent = config.durationText;
+            
+            document.getElementById('stakeModal').classList.add('active');
+            updateStakeCalculator();
+        }
+        
+        function closeStakeModal() {
+            document.getElementById('stakeModal').classList.remove('active');
+        }
+        
+        function updateStakeCalculator() {
+            const amount = parseFloat(document.getElementById('stakeAmount').value) || 0;
+            const config = stakingTiers[selectedTier];
+            
+            // Calculate total rewards: amount * APR * (duration/365)
+            const totalRewards = amount * (config.apr / 100) * (config.duration / 365);
+            const weeklyRewards = totalRewards / (config.duration / 7);
+            
+            document.getElementById('calcStakeAmount').textContent = amount.toLocaleString() + ' $VAULT';
+            document.getElementById('calcRewards').textContent = totalRewards.toFixed(2) + ' $eVAULT';
+            document.getElementById('calcWeekly').textContent = weeklyRewards.toFixed(2) + ' $eVAULT';
+        }
+        
+        document.getElementById('stakeAmount').addEventListener('input', updateStakeCalculator);
+        
+        function confirmStake() {
+            const amount = document.getElementById('stakeAmount').value;
+            if (!amount || amount < 100) {
+                alert('Minimum stake amount is 100 $VAULT');
+                return;
+            }
+            
+            // In production, this would call the smart contract
+            alert(`Staking ${amount} $VAULT for ${stakingTiers[selectedTier].durationText} at ${stakingTiers[selectedTier].apr}% APR`);
+            closeStakeModal();
+        }
+        
+        // Calculate next Thursday 2pm UTC
+        function updateNextUnlock() {
+            const now = new Date();
+            const nextThursday = new Date();
+            nextThursday.setUTCDate(now.getUTCDate() + ((4 - now.getUTCDay() + 7) % 7));
+            nextThursday.setUTCHours(14, 0, 0, 0);
+            
+            if (nextThursday <= now) {
+                nextThursday.setUTCDate(nextThursday.getUTCDate() + 7);
+            }
+            
+            const options = { weekday: 'long', hour: 'numeric', minute: 'numeric', timeZoneName: 'short' };
+            document.getElementById('nextUnlockTime').textContent = nextThursday.toLocaleString('en-US', options);
+        }
+        
+        updateNextUnlock();
+    </script>
+</body>
+</html>

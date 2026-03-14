@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Marketplace - TCG Vault Protocol</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .filters-bar {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .filter-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        
+        .filter-select {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .search-input {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            min-width: 250px;
+        }
+        
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .card-product {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+        
+        .card-product:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-yellow);
+        }
+        
+        .card-image {
+            aspect-ratio: 3/4;
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-primary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            position: relative;
+        }
+        
+        .card-grade {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--accent-blue);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .card-info {
+            padding: 1.25rem;
+        }
+        
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .card-set {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+        
+        .card-price-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .card-price {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent-yellow);
+        }
+        
+        .token-discount {
+            font-size: 0.75rem;
+            color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+        
+        .card-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+        
+        .btn-small {
+            padding: 0.6rem 0.75rem;
+            font-size: 0.8rem;
+        }
+        
+        .btn-card {
+            background: var(--accent-blue);
+            color: white;
+            padding: 0.6rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.8rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .btn-token {
+            background: var(--accent-yellow);
+            color: var(--bg-primary);
+            padding: 0.6rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .btn-token:hover {
+            background: var(--accent-yellow-light);
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 3rem;
+        }
+        
+        .page-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .page-btn:hover, .page-btn.active {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+        }
+    </style>
+</head>
+<body class="market-watermark">
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
+                    <path d="M7 8L7 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M12 8L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M17 8L17 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                TCG Vault Protocol
+            </a>
+            <ul class="nav-links">
+                <li><a href="breaks.html">Breaks</a></li>
+                <li><a href="vault.html">Vault</a></li>
+                <li><a href="marketplace.html">Fractions</a></li>
+                <li><a href="token.html">Token</a></li>
+                <li><a href="cards.html" class="active">Cards</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="transparency.html">Transparency</a></li>
+                <li><a href="whitepaper.html">Whitepaper</a></li>
+            </ul>
+            <a href="breaks.html" class="nav-cta">Join a Break</a>
+            <button class="mobile-menu-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <section style="padding-top: 8rem;">
+        <div class="container">
+            <div class="section-header">
+                <h2>Card Marketplace</h2>
+                <p>Buy graded cards and collectibles directly from our vault</p>
+            </div>
+            
+            <div class="filters-bar">
+                <div class="filter-group">
+                    <span class="filter-label">Search:</span>
+                    <input type="text" class="search-input" placeholder="Search cards...">
+                </div>
+                <div class="filter-group">
+                    <span class="filter-label">Category:</span>
+                    <select class="filter-select">
+                        <option>All Categories</option>
+                        <option>Pokemon</option>
+                        <option>Magic: The Gathering</option>
+                        <option>Yu-Gi-Oh!</option>
+                        <option>Sports Cards</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <span class="filter-label">Grade:</span>
+                    <select class="filter-select">
+                        <option>All Grades</option>
+                        <option>PSA 10</option>
+                        <option>PSA 9</option>
+                        <option>PSA 8</option>
+                        <option>BGS 9.5</option>
+                        <option>BGS 9</option>
+                        <option>Ungraded</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <span class="filter-label">Price:</span>
+                    <select class="filter-select">
+                        <option>Any Price</option>
+                        <option>Under £100</option>
+                        <option>£100 - £500</option>
+                        <option>£500 - £1000</option>
+                        <option>£1000 - £5000</option>
+                        <option>Over £5000</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="cards-grid">
+                <div class="card-product">
+                    <div class="card-image">
+                        🌙
+                        <span class="card-grade">PSA 10</span>
+                    </div>
+                    <div class="card-info">
+                        <div class="card-title">Umbreon VMAX Alt Art</div>
+                        <div class="card-set">Evolving Skies</div>
+                        <div class="card-price-row">
+                            <div class="card-price">£500</div>
+                            <span class="token-discount">10% off with token</span>
+                        </div>
+                        <div class="card-buttons">
+                            <a href="checkout.html?type=card&id=1&pay=card" class="btn-card">Buy with Card</a>
+                            <a href="checkout.html?type=card&id=1&pay=token" class="btn-token">Buy with Token</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-product">
+                    <div class="card-image">
+                        🔥
+                        <span class="card-grade">PSA 10</span>
+                    </div>
+                    <div class="card-info">
+                        <div class="card-title">Charizard VMAX</div>
+                        <div class="card-set">Darkness Ablaze</div>
+                        <div class="card-price-row">
+                            <div class="card-price">£350</div>
+                            <span class="token-discount">10% off with token</span>
+                        </div>
+                        <div class="card-buttons">
+                            <a href="checkout.html?type=card&id=2&pay=card" class="btn-card">Buy with Card</a>
+                            <a href="checkout.html?type=card&id=2&pay=token" class="btn-token">Buy with Token</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-product">
+                    <div class="card-image">
+                        ⚡
+                        <span class="card-grade">PSA 9</span>
+                    </div>
+                    <div class="card-info">
+                        <div class="card-title">Pikachu Illustrator</div>
+                        <div class="card-set">Promo</div>
+                        <div class="card-price-row">
+                            <div class="card-price">£2,500</div>
+                            <span class="token-discount">10% off with token</span>
+                        </div>
+                        <div class="card-buttons">
+                            <a href="checkout.html?type=card&id=3&pay=card" class="btn-card">Buy with Card</a>
+                            <a href="checkout.html?type=card&id=3&pay=token" class="btn-token">Buy with Token</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-product">
+                    <div class="card-image">
+                        🐉
+                        <span class="card-grade">BGS 9.5</span>
+                    </div>
+                    <div class="card-info">
+                        <div class="card-title">Rayquaza VMAX</div>
+                        <div class="card-set">Evolving Skies</div>
+                        <div class="card-price-row">
+                            <div class="card-price">£800</div>
+                            <span class="token-discount">10% off with token</span>
+                        </div>
+                        <div class="card-buttons">
+                            <a href="checkout.html?type=card&id=4&pay=card" class="btn-card">Buy with Card</a>
+                            <a href="checkout.html?type=card&id=4&pay=token" class="btn-token">Buy with Token</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-product">
+                    <div class="card-image">
+                        ⚫
+                        <span class="card-grade">PSA 7</span>
+                    </div>
+                    <div class="card-info">
+                        <div class="card-title">Black Lotus</div>
+                        <div class="card-set">MTG Beta</div>
+                        <div class="card-price-row">
+                            <div class="card-price">£15,000</div>
+                            <span class="token-discount">10% off with token</span>
+                        </div>
+                        <div class="card-buttons">
+                            <a href="checkout.html?type=card&id=5&pay=card" class="btn-card">Buy with Card</a>
+                            <a href="checkout.html?type=card&id=5&pay=token" class="btn-token">Buy with Token</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-product">
+                    <div class="card-image">
+                        🎴
+                        <span class="card-grade">PSA 10</span>
+                    </div>
+                    <div class="card-info">
+                        <div class="card-title">Blue-Eyes White Dragon</div>
+                        <div class="card-set">SDK-001 1st Ed</div>
+                        <div class="card-price-row">
+                            <div class="card-price">£1,200</div>
+                            <span class="token-discount">10% off with token</span>
+                        </div>
+                        <div class="card-buttons">
+                            <a href="checkout.html?type=card&id=6&pay=card" class="btn-card">Buy with Card</a>
+                            <a href="checkout.html?type=card&id=6&pay=token" class="btn-token">Buy with Token</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-product">
+                    <div class="card-image">
+                        💎
+                        <span class="card-grade">PSA 10</span>
+                    </div>
+                    <div class="card-info">
+                        <div class="card-title">Lugia 1st Edition</div>
+                        <div class="card-set">Neo Genesis</div>
+                        <div class="card-price-row">
+                            <div class="card-price">£4,500</div>
+                            <span class="token-discount">10% off with token</span>
+                        </div>
+                        <div class="card-buttons">
+                            <a href="checkout.html?type=card&id=7&pay=card" class="btn-card">Buy with Card</a>
+                            <a href="checkout.html?type=card&id=7&pay=token" class="btn-token">Buy with Token</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-product">
+                    <div class="card-image">
+                        🌟
+                        <span class="card-grade">PSA 9</span>
+                    </div>
+                    <div class="card-info">
+                        <div class="card-title">Mewtwo GX</div>
+                        <div class="card-set">Shining Legends</div>
+                        <div class="card-price-row">
+                            <div class="card-price">£180</div>
+                            <span class="token-discount">10% off with token</span>
+                        </div>
+                        <div class="card-buttons">
+                            <a href="checkout.html?type=card&id=8&pay=card" class="btn-card">Buy with Card</a>
+                            <a href="checkout.html?type=card&id=8&pay=token" class="btn-token">Buy with Token</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="pagination">
+                <a href="#" class="page-btn active">1</a>
+                <a href="#" class="page-btn">2</a>
+                <a href="#" class="page-btn">3</a>
+                <a href="#" class="page-btn">4</a>
+                <a href="#" class="page-btn">Next →</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 32px; height: 32px;">
+                            <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
+                            <path d="M7 8L7 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M12 8L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M17 8L17 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        TCG Vault Protocol
+                    </a>
+                    <p>The future of trading card collecting. Break, invest, and own fractional shares of rare collectibles.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Platform</h4>
+                    <ul>
+                        <li><a href="breaks.html">Live Breaks</a></li>
+                        <li><a href="vault.html">Vault</a></li>
+                        <li><a href="marketplace.html">Fractions</a></li>
+                        <li><a href="token.html">Token</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 TCG Vault Protocol. All rights reserved.</p>
+                <div class="footer-legal">
+                    <a href="#">Terms</a>
+                    <a href="#">Privacy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

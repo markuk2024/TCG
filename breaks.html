@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Breaks - TCG Vault Protocol</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="breaks-watermark">
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
+                    <path d="M7 8L7 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M12 8L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M17 8L17 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                TCG Vault Protocol
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html#how-it-works">How It Works</a></li>
+                <li><a href="breaks.html">Breaks</a></li>
+                <li><a href="vault.html">Vault</a></li>
+                <li><a href="marketplace.html">Fractions</a></li>
+                <li><a href="staking.html">Staking</a></li>
+                <li><a href="token.html">Token</a></li>
+                <li><a href="cards.html">Cards</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="transparency.html">Transparency</a></li>
+                <li><a href="whitepaper.html">Whitepaper</a></li>
+            </ul>
+            <a href="breaks.html" class="nav-cta">Join a Break</a>
+            <button class="mobile-menu-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Live Breaks Section -->
+    <section id="live-breaks" style="padding-top: 8rem;">
+        <div class="container">
+            <div class="section-header">
+                <h2>Live Breaks</h2>
+                <p>Join upcoming breaks and watch your packs opened live</p>
+            </div>
+            <div class="breaks-grid">
+                <div class="break-card">
+                    <div class="break-header">
+                        <h3>Pokemon Scarlet & Violet Booster Box</h3>
+                        <div class="break-meta">
+                            <span>36 Packs</span>
+                            <span>•</span>
+                            <span>Live in 2 hours</span>
+                        </div>
+                    </div>
+                    <div class="break-body">
+                        <div class="break-stats">
+                            <div class="break-stat">
+                                <div class="break-stat-value">£6.00</div>
+                                <div class="break-stat-label">Pack Price</div>
+                            </div>
+                            <div class="break-stat">
+                                <div class="break-stat-value">14</div>
+                                <div class="break-stat-label">Packs Left</div>
+                            </div>
+                            <div class="break-stat">
+                                <div class="break-stat-value">22</div>
+                                <div class="break-stat-label">Collectors</div>
+                            </div>
+                        </div>
+                        <div class="break-timer">
+                            <div class="timer-label">Starts In</div>
+                            <div class="timer-value" data-time="7200">02:00:00</div>
+                        </div>
+                        <button class="btn-primary btn-full" onclick="openBreakPaymentModal('Pokemon Scarlet & Violet Booster Box', 6.00, 'scarlet-violet')">Buy Pack Slot</button>
+                    </div>
+                </div>
+                <div class="break-card">
+                    <div class="break-header">
+                        <h3>Magic: The Gathering Lord of the Rings</h3>
+                        <div class="break-meta">
+                            <span>24 Packs</span>
+                            <span>•</span>
+                            <span>Live in 4 hours</span>
+                        </div>
+                    </div>
+                    <div class="break-body">
+                        <div class="break-stats">
+                            <div class="break-stat">
+                                <div class="break-stat-value">£12.50</div>
+                                <div class="break-stat-label">Pack Price</div>
+                            </div>
+                            <div class="break-stat">
+                                <div class="break-stat-value">8</div>
+                                <div class="break-stat-label">Packs Left</div>
+                            </div>
+                            <div class="break-stat">
+                                <div class="break-stat-value">16</div>
+                                <div class="break-stat-label">Collectors</div>
+                            </div>
+                        </div>
+                        <div class="break-timer">
+                            <div class="timer-label">Starts In</div>
+                            <div class="timer-value" data-time="14400">04:00:00</div>
+                        </div>
+                        <button class="btn-primary btn-full" onclick="openBreakPaymentModal('Magic: The Gathering Lord of the Rings', 12.50, 'mtg-lotr')">Buy Pack Slot</button>
+                    </div>
+                </div>
+                <div class="break-card">
+                    <div class="break-header">
+                        <h3>Yu-Gi-Oh! 25th Anniversary Rarity Collection</h3>
+                        <div class="break-meta">
+                            <span>20 Packs</span>
+                            <span>•</span>
+                            <span>Live tomorrow</span>
+                        </div>
+                    </div>
+                    <div class="break-body">
+                        <div class="break-stats">
+                            <div class="break-stat">
+                                <div class="break-stat-value">£15.00</div>
+                                <div class="break-stat-label">Pack Price</div>
+                            </div>
+                            <div class="break-stat">
+                                <div class="break-stat-value">20</div>
+                                <div class="break-stat-label">Packs Left</div>
+                            </div>
+                            <div class="break-stat">
+                                <div class="break-stat-value">0</div>
+                                <div class="break-stat-label">Collectors</div>
+                            </div>
+                        </div>
+                        <div class="break-timer">
+                            <div class="timer-label">Starts In</div>
+                            <div class="timer-value" data-time="86400">24:00:00</div>
+                        </div>
+                        <button class="btn-primary btn-full" onclick="openBreakPaymentModal('Yu-Gi-Oh! 25th Anniversary Rarity Collection', 15.00, 'ygo-25th')">Buy Pack Slot</button>
+                    </div>
+                </div>
+                <div class="break-card">
+                    <div class="break-header">
+                        <h3>Pokemon 151 Booster Box</h3>
+                        <div class="break-meta">
+                            <span>36 Packs</span>
+                            <span>•</span>
+                            <span>Live in 3 days</span>
+                        </div>
+                    </div>
+                    <div class="break-body">
+                        <div class="break-stats">
+                            <div class="break-stat">
+                                <div class="break-stat-value">£8.00</div>
+                                <div class="break-stat-label">Pack Price</div>
+                            </div>
+                            <div class="break-stat">
+                                <div class="break-stat-value">36</div>
+                                <div class="break-stat-label">Packs Left</div>
+                            </div>
+                            <div class="break-stat">
+                                <div class="break-stat-value">0</div>
+                                <div class="break-stat-label">Collectors</div>
+                            </div>
+                        </div>
+                        <div class="break-timer">
+                            <div class="timer-label">Starts In</div>
+                            <div class="timer-value" data-time="259200">72:00:00</div>
+                        </div>
+                        <button class="btn-primary btn-full" onclick="openBreakPaymentModal('Pokemon 151 Booster Box', 8.00, 'pokemon-151')">Buy Pack Slot</button>
+                    </div>
+                </div>
+                <div class="break-card">
+                    <div class="break-header">
+                        <h3>Magic Commander Masters</h3>
+                        <div class="break-meta">
+                            <span>4 Packs</span>
+                            <span>•</span>
+                            <span>Live in 1 week</span>
+                        </div>
+                    </div>
+                    <div class="break-body">
+                        <div class="break-stats">
+                            <div class="break-stat">
+                                <div class="break-stat-value">£45.00</div>
+                                <div class="break-stat-label">Pack Price</div>
+                            </div>
+                            <div class="break-stat">
+                                <div class="break-stat-value">4</div>
+                                <div class="break-stat-label">Packs Left</div>
+                            </div>
+                            <div class="break-stat">
+                                <div class="break-stat-value">0</div>
+                                <div class="break-stat-label">Collectors</div>
+                            </div>
+                        </div>
+                        <div class="break-timer">
+                            <div class="timer-label">Starts In</div>
+                            <div class="timer-value" data-time="604800">168:00:00</div>
+                        </div>
+                        <button class="btn-primary btn-full" onclick="openBreakPaymentModal('Magic Commander Masters', 45.00, 'mtg-commander')">Buy Pack Slot</button>
+                    </div>
+                </div>
+                <div class="break-card">
+                    <div class="break-header">
+                        <h3>Pokemon Paldea Evolved</h3>
+                        <div class="break-meta">
+                            <span>36 Packs</span>
+                            <span>•</span>
+                            <span>Live in 2 weeks</span>
+                        </div>
+                    </div>
+                    <div class="break-body">
+                        <div class="break-stats">
+                            <div class="break-stat">
+                                <div class="break-stat-value">£5.50</div>
+                                <div class="break-stat-label">Pack Price</div>
+                            </div>
+                            <div class="break-stat">
+                                <div class="break-stat-value">36</div>
+                                <div class="break-stat-label">Packs Left</div>
+                            </div>
+                            <div class="break-stat">
+                                <div class="break-stat-value">0</div>
+                                <div class="break-stat-label">Collectors</div>
+                            </div>
+                        </div>
+                        <div class="break-timer">
+                            <div class="timer-label">Starts In</div>
+                            <div class="timer-value" data-time="1209600">336:00:00</div>
+                        </div>
+                        <button class="btn-primary btn-full" onclick="openBreakPaymentModal('Pokemon Paldea Evolved', 5.50, 'paldea-evolved')">Buy Pack Slot</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Break Payment Modal -->
+    <div class="break-payment-modal" id="breakPaymentModal">
+        <div class="payment-modal-overlay" onclick="closeBreakPaymentModal()"></div>
+        <div class="payment-modal-content">
+            <div class="payment-modal-header">
+                <h3>Purchase Pack Slot</h3>
+                <button class="close-btn" onclick="closeBreakPaymentModal()">&times;</button>
+            </div>
+            <div class="payment-modal-body">
+                <div class="break-summary">
+                    <h4 id="modalBreakName">Break Name</h4>
+                    <div class="break-price">£<span id="modalBreakPrice">0.00</span> per pack</div>
+                </div>
+                
+                <div class="quantity-selector">
+                    <label>Number of Packs</label>
+                    <div class="qty-controls">
+                        <button class="qty-btn" onclick="adjustPackQuantity(-1)">-</button>
+                        <input type="number" id="packQuantity" value="1" min="1" max="36" readonly>
+                        <button class="qty-btn" onclick="adjustPackQuantity(1)">+</button>
+                    </div>
+                    <div class="total-price">Total: £<span id="modalTotalPrice">0.00</span></div>
+                </div>
+
+                <div class="revenue-distribution">
+                    <h5>Revenue Distribution <span style="color: var(--text-muted); font-weight: 400;">(Transparent & Open)</span></h5>
+                    <div class="distribution-breakdown">
+                        <div class="dist-row">
+                            <span class="dist-label">Pack Cost to Operations <small>(Rebuy stock)</small></span>
+                            <span class="dist-value" id="costToOpsAmount">£0.00</span>
+                        </div>
+                        <div class="dist-row">
+                            <span class="dist-label">Treasury <small>(50% - Ecosystem Support)</small></span>
+                            <span class="dist-value" id="treasuryAmount">£0.00</span>
+                        </div>
+                        <div class="dist-row">
+                            <span class="dist-label">Operations <small>(20% - Wages & Services)</small></span>
+                            <span class="dist-value" id="operationsAmount">£0.00</span>
+                        </div>
+                        <div class="dist-row token-liquidity">
+                            <span class="dist-label">Token Liquidity <small>(20% - Building to 25K)</small></span>
+                            <span class="dist-value" id="tokenLiquidityAmount">£0.00</span>
+                        </div>
+                        <div class="dist-row">
+                            <span class="dist-label">Investment Vault <small>(10% - Buyouts & Farming)</small></span>
+                            <span class="dist-value" id="investmentAmount">£0.00</span>
+                        </div>
+                    </div>
+                    <div class="liquidity-info" style="margin-top: 1rem; padding: 0.75rem; background: rgba(255, 222, 0, 0.1); border: 1px solid var(--accent-yellow); border-radius: 8px; font-size: 0.85rem; color: var(--text-secondary);">
+                        <strong style="color: var(--accent-yellow);">Token Launch:</strong> The sooner we build liquidity, the sooner the token launches. Every break purchase accelerates our journey to 25K liquidity!
+                    </div>
+                </div>
+
+                <div class="payment-options">
+                    <h5>Payment Method</h5>
+                    
+                    <div class="payment-tabs single-tab">
+                        <button class="payment-tab active" style="cursor: default;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M9.5 9.5c.5-1 1.5-1.5 2.5-1.5s2 .5 2.5 1.5"/>
+                                <path d="M9.5 14.5c.5 1 1.5 1.5 2.5 1.5s2-.5 2.5-1.5"/>
+                                <line x1="12" y1="8" x2="12" y2="16"/>
+                            </svg>
+                            Crypto (BSC) - USDC/USDT
+                        </button>
+                    </div>
+
+                    <div class="payment-content" id="cryptoPayment">
+                        <div class="wallet-section">
+                            <p class="wallet-info">Connect your BSC wallet to pay with USDC or USDT</p>
+                            <button class="btn-secondary btn-full" id="connectBSCWallet" onclick="connectBSCWallet()">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                                    <path d="M7 8h.01"/>
+                                    <path d="M17 8h.01"/>
+                                    <path d="M7 16h.01"/>
+                                </svg>
+                                Connect BSC Wallet
+                            </button>
+                            <div class="wallet-status" id="walletStatus" style="display: none;">
+                                <span class="wallet-address" id="walletAddress"></span>
+                                <span class="wallet-balance" id="walletBalance"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="token-selection" id="tokenSelection" style="display: none;">
+                            <label>Select Token</label>
+                            <div class="token-options">
+                                <button class="token-option active" onclick="selectToken('USDC')">
+                                    <span class="token-icon">$</span>
+                                    <span class="token-name">USDC</span>
+                                    <span class="token-balance" id="usdcBalance">0.00</span>
+                                </button>
+                                <button class="token-option" onclick="selectToken('USDT')">
+                                    <span class="token-icon">₮</span>
+                                    <span class="token-name">USDT</span>
+                                    <span class="token-balance" id="usdtBalance">0.00</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button class="btn-primary btn-full" id="payWithCrypto" onclick="processCryptoPayment()" disabled>
+                            Pay £<span id="cryptoPayAmount">0.00</span> USDC
+                        </button>
+                        
+                        <div class="payment-info">
+                            <small>Network: Binance Smart Chain (BSC)</small>
+                            <small>Gas fees: ~$0.05-0.20</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Status Modal -->
+    <div class="payment-status-modal" id="paymentStatusModal">
+        <div class="payment-modal-overlay" onclick="closePaymentStatus()"></div>
+        <div class="payment-modal-content">
+            <div class="payment-status-content">
+                <div class="status-icon" id="statusIcon">⏳</div>
+                <h3 id="statusTitle">Processing Payment</h3>
+                <p id="statusMessage">Please confirm the transaction in your wallet...</p>
+                <div class="transaction-hash" id="txHash" style="display: none;"></div>
+                <button class="btn-primary" id="statusBtn" onclick="closePaymentStatus()" style="display: none;">Continue</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 32px; height: 32px;">
+                            <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
+                            <path d="M7 8L7 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M12 8L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M17 8L17 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        TCG Vault Protocol
+                    </a>
+                    <p>The future of trading card collecting. Break, invest, and own fractional shares of rare collectibles.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Platform</h4>
+                    <ul>
+                        <li><a href="breaks.html">Live Breaks</a></li>
+                        <li><a href="vault.html">Vault</a></li>
+                        <li><a href="marketplace.html">Marketplace</a></li>
+                        <li><a href="token.html">Token</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">API</a></li>
+                        <li><a href="#">Treasury</a></li>
+                        <li><a href="#">Brand Kit</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Press</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 TCG Vault Protocol. All rights reserved.</p>
+                <div class="footer-legal">
+                    <a href="#">Terms</a>
+                    <a href="#">Privacy</a>
+                    <a href="#">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

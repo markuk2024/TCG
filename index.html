@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCG Vault Protocol - The Future of Trading Card Collecting</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Ethers.js -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <!-- Web3 Integration -->
+    <script src="web3-integration.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a1f;
+            --bg-secondary: #121230;
+            --bg-card: #1a1a40;
+            --accent-blue: #3B4CCA;
+            --accent-yellow: #FFDE00;
+            --accent-yellow-light: #FFE94D;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0c0;
+            --text-muted: #6b6b8b;
+            --border-color: #2a2a5a;
+            --success: #10b981;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-yellow);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-yellow);
+        }
+
+        .nav-cta {
+            background: linear-gradient(135deg, var(--accent-blue), #5a6fdb);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(59, 76, 202, 0.4);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding: 6rem 2rem 4rem;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(59, 76, 202, 0.2) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 50%, rgba(255, 222, 0, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 222, 0, 0.1);
+            border: 1px solid var(--accent-yellow);
+            color: var(--accent-yellow);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+        }
+
+        .hero-badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--accent-yellow);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #fff 0%, var(--accent-yellow-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+            color: var(--accent-yellow);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.1em;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-blue), #5a6fdb);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(59, 76, 202, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent-yellow);
+            color: var(--accent-yellow);
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 4rem;
+            margin-top: 4rem;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-yellow);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* Section Styles */
+        section {
+            padding: 5rem 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            background: var(--bg-secondary);
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .step {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            position: relative;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .step:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-yellow);
+        }
+
+        .step-number {
+            position: absolute;
+            top: -15px;
+            left: 2rem;
+            background: linear-gradient(135deg, var(--accent-blue), #5a6fdb);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .step h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .step p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .step-options {
+            margin-top: 1rem;
+            padding-left: 1rem;
+        }
+
+        .step-options li {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            list-style-type: none;
+            position: relative;
+        }
+
+        .step-options li::before {
+            content: '•';
+            color: var(--accent-yellow);
+            position: absolute;
+            left: -1rem;
+        }
+
+        /* Live Breaks */
+        .breaks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .break-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .break-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-yellow);
+        }
+
+        .break-header {
+            background: linear-gradient(135deg, rgba(59, 76, 202, 0.15), rgba(255, 222, 0, 0.1));
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .break-header h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .break-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .break-body {
+            padding: 1.5rem;
+        }
+
+        .break-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .break-stat {
+            text-align: center;
+        }
+
+        .break-stat-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--accent-yellow);
+        }
+
+        .break-stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .break-timer {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .timer-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .timer-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-yellow);
+            font-family: monospace;
+        }
+
+        .btn-full {
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* Vault Section */
+        .vault {
+            background: var(--bg-secondary);
+        }
+
+        .treasury-value {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .treasury-label {
+            font-size: 1rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+        }
+
+        .treasury-amount {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-yellow-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .assets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .asset-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .asset-card:hover {
+            border-color: var(--accent-yellow);
+        }
+
+        .asset-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, rgba(59, 76, 202, 0.25), rgba(255, 222, 0, 0.2));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .asset-info h4 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .asset-info p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .asset-value {
+            margin-left: auto;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent-yellow);
+        }
+
+        .asset-categories {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .asset-category {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .asset-category::before {
+            content: '';
+            width: 12px;
+            height: 12px;
+            background: var(--accent-yellow);
+            border-radius: 3px;
+        }
+
+        /* Marketplace */
+        .marketplace-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .marketplace-card h3 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .fraction-listing {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .fraction-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .fraction-img {
+            width: 60px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--accent-purple), #8b5cf6);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .fraction-title {
+            font-weight: 600;
+        }
+
+        .fraction-grade {
+            font-size: 0.85rem;
+            color: var(--success);
+        }
+
+        .fraction-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .fraction-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .fraction-stat-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Token Section */
+        .token {
+            background: var(--bg-secondary);
+        }
+
+        .token-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .token-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+
+        .token-visual {
+            display: flex;
+            justify-content: center;
+        }
+
+        .token-circle {
+            width: 280px;
+            height: 280px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-yellow), var(--accent-yellow-light));
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 30px 60px rgba(59, 76, 202, 0.3);
+            position: relative;
+        }
+
+        .token-circle::before {
+            content: '';
+            position: absolute;
+            inset: 10px;
+            background: var(--bg-secondary);
+            border-radius: 50%;
+        }
+
+        .token-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .token-supply-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .token-supply-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-yellow);
+            margin: 0.5rem 0;
+        }
+
+        .token-symbol {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .benefits-list {
+            list-style: none;
+        }
+
+        .benefits-list li {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .benefits-list li:last-child {
+            border-bottom: none;
+        }
+
+        .benefit-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 222, 0, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-yellow);
+        }
+
+        /* Staking Section */
+        .staking-card {
+            background: linear-gradient(135deg, rgba(59, 76, 202, 0.15), rgba(255, 222, 0, 0.1));
+            border: 1px solid var(--accent-yellow);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .apy-display {
+            margin: 2rem 0;
+        }
+
+        .apy-label {
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+
+        .apy-value {
+            font-size: 4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-yellow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .staking-info {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        /* Flywheel */
+        .flywheel {
+            background: var(--bg-secondary);
+        }
+
+        .flywheel-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .flywheel-step {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            text-align: center;
+            width: 100%;
+            font-weight: 600;
+            transition: border-color 0.3s;
+        }
+
+        .flywheel-step:hover {
+            border-color: var(--accent-yellow);
+        }
+
+        .flywheel-arrow {
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-yellow);
+            font-size: 1.5rem;
+        }
+
+        /* Community */
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.3s;
+        }
+
+        .social-link:hover {
+            border-color: var(--accent-yellow);
+            transform: translateY(-3px);
+        }
+
+        .social-icon {
+            width: 24px;
+            height: 24px;
+            color: var(--accent-yellow);
+        }
+
+        /* Roadmap */
+        .roadmap {
+            background: var(--bg-secondary);
+        }
+
+        .roadmap-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .roadmap-phase {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .roadmap-phase.completed {
+            border-color: var(--success);
+        }
+
+        .roadmap-phase.active {
+            border-color: var(--accent-yellow);
+        }
+
+        .phase-badge {
+            position: absolute;
+            top: -12px;
+            left: 2rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            padding: 0.25rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .roadmap-phase.completed .phase-badge {
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .roadmap-phase.active .phase-badge {
+            border-color: var(--accent-yellow);
+            color: var(--accent-yellow);
+        }
+
+        .roadmap-phase h3 {
+            margin-bottom: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .phase-items {
+            list-style: none;
+        }
+
+        .phase-items li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            color: var(--text-secondary);
+        }
+
+        .phase-items li::before {
+            content: '✓';
+            color: var(--success);
+            font-weight: 700;
+        }
+
+        .roadmap-phase.active .phase-items li::before {
+            content: '→';
+            color: var(--accent-yellow);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-primary);
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 2rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr repeat(3, 1fr);
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (max-width: 768px) {
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .footer-brand p {
+            color: var(--text-muted);
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .footer-links h4 {
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-yellow);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--border-color);
+            padding-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-bottom p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .footer-legal {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-legal a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.3s;
+        }
+
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero-stats {
+                gap: 2rem;
+            }
+            
+            section {
+                padding: 3rem 1rem;
+            }
+            
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="home-watermark">
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
+                    <path d="M7 8L7 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M12 8L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M17 8L17 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                TCG Vault Protocol
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="breaks.html">Live Breaks</a></li>
+                <li><a href="breaks.html">Breaks</a></li>
+                <li><a href="vault.html">Vault</a></li>
+                <li><a href="marketplace.html">Fractions</a></li>
+                <li><a href="staking.html">Staking</a></li>
+                <li><a href="token.html">Token</a></li>
+                <li><a href="cards.html">Cards</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="transparency.html">Transparency</a></li>
+                <li><a href="whitepaper.html">Whitepaper</a></li>
+            </ul>
+            <a href="breaks.html" class="nav-cta">Join a Break</a>
+            <button id="connect-wallet-btn" class="wallet-connect" onclick="window.TCGWeb3.connectWallet()">Connect Wallet</button>
+            <span id="wallet-address" class="wallet-address"></span>
+            <button class="mobile-menu-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+            <div class="hero-badge">Live Breaks Running Now</div>
+            <h1>The Future of Trading Card Collecting</h1>
+            <p class="hero-subtitle">Break. Invest. Own.</p>
+            <p>Join the first platform combining live trading card breaks, fractional ownership of rare collectibles, and a treasury-backed ecosystem token.</p>
+            <div class="hero-buttons">
+                <a href="breaks.html" class="btn-primary">
+                    Join a Live Break
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+                <a href="vault.html" class="btn-secondary">Explore the Vault</a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <div class="stat-value" data-count="248000">$0</div>
+                    <div class="stat-label">Treasury Value</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" data-count="12500">0</div>
+                    <div class="stat-label">Cards Vaulted</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" data-count="3400">0</div>
+                    <div class="stat-label">Collectors</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2>How It Works</h2>
+                <p>Four simple steps to start collecting and investing in trading cards</p>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Join a Break</h3>
+                    <p>Buy pack slots and watch them opened live. Choose a live box break and purchase your pack slot. All breaks are streamed live so you can watch your cards get pulled in real time.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Pull Big Hits</h3>
+                    <p>If you hit a rare card, you can:</p>
+                    <ul class="step-options">
+                        <li>Keep it and have it shipped</li>
+                        <li>Sell instantly to the vault</li>
+                        <li>Grade it for potential profit</li>
+                    </ul>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Vault Collectibles</h3>
+                    <p>Rare cards and sealed products are stored in the vault treasury. These assets support the platform ecosystem and provide tangible backing for the token.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Own Fractions</h3>
+                    <p>Users can buy fractional ownership of valuable cards and trade them in the marketplace. It's like the stock market for trading cards.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Breaks -->
+    <section id="live-breaks">
+        <div class="container">
+            <div class="section-header">
+                <h2>Live Breaks</h2>
+                <p>Join upcoming breaks and watch your packs opened live</p>
+            </div>
+            <div class="breaks-grid">
+                <div class="break-card">
+                    <div class="break-header">
+                        <h3>Pokemon Scarlet & Violet Booster Box</h3>
+                        <div class="break-meta">
+                            <span>36 Packs</span>
+                            <span>•</span>
+                            <span>Live in 2 hours</span>
+                        </div>
+                    </div>
+                    <div class="break-body">
+                        <div class="break-stats">
+                            <div class="break-stat">
+                                <div class="break-stat-value">$6.00</div>
+                                <div class="break-stat-label">Pack Price</div>
+                            </div>
+                            <div class="break-stat">
+                                <div class="break-stat-value">14</div>
+                                <div class="break-stat-label">Packs Left</div>
+                            </div>
+                            <div class="break-stat">
+                                <div class="break-stat-value">22</div>
+                                <div class="break-stat-label">Collectors</div>
+                            </div>
+                        </div>
+                        <div class="break-timer">
+                            <div class="timer-label">Starts In</div>
+                            <div class="timer-value" data-time="7200">02:00:00</div>
+                        </div>
+                        <a href="#" class="btn-primary btn-full">Buy Pack Slot</a>
+                    </div>
+                </div>
+                <div class="break-card">
+                    <div class="break-header">
+                        <h3>Magic: The Gathering Lord of the Rings</h3>
+                        <div class="break-meta">
+                            <span>24 Packs</span>
+                            <span>•</span>
+                            <span>Live in 4 hours</span>
+                        </div>
+                    </div>
+                    <div class="break-body">
+                        <div class="break-stats">
+                            <div class="break-stat">
+                                <div class="break-stat-value">$12.50</div>
+                                <div class="break-stat-label">Pack Price</div>
+                            </div>
+                            <div class="break-stat">
+                                <div class="break-stat-value">8</div>
+                                <div class="break-stat-label">Packs Left</div>
+                            </div>
+                            <div class="break-stat">
+                                <div class="break-stat-value">16</div>
+                                <div class="break-stat-label">Collectors</div>
+                            </div>
+                        </div>
+                        <div class="break-timer">
+                            <div class="timer-label">Starts In</div>
+                            <div class="timer-value" data-time="14400">04:00:00</div>
+                        </div>
+                        <a href="#" class="btn-primary btn-full">Buy Pack Slot</a>
+                    </div>
+                </div>
+                <div class="break-card">
+                    <div class="break-header">
+                        <h3>Yu-Gi-Oh! 25th Anniversary Rarity Collection</h3>
+                        <div class="break-meta">
+                            <span>20 Packs</span>
+                            <span>•</span>
+                            <span>Live tomorrow</span>
+                        </div>
+                    </div>
+                    <div class="break-body">
+                        <div class="break-stats">
+                            <div class="break-stat">
+                                <div class="break-stat-value">$15.00</div>
+                                <div class="break-stat-label">Pack Price</div>
+                            </div>
+                            <div class="break-stat">
+                                <div class="break-stat-value">20</div>
+                                <div class="break-stat-label">Packs Left</div>
+                            </div>
+                            <div class="break-stat">
+                                <div class="break-stat-value">0</div>
+                                <div class="break-stat-label">Collectors</div>
+                            </div>
+                        </div>
+                        <div class="break-timer">
+                            <div class="timer-label">Starts In</div>
+                            <div class="timer-value" data-time="86400">24:00:00</div>
+                        </div>
+                        <a href="#" class="btn-primary btn-full">Buy Pack Slot</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vault Treasury -->
+    <section class="vault" id="vault">
+        <div class="container">
+            <div class="section-header">
+                <h2>Vault Treasury</h2>
+                <p>Real assets backing the platform. Full transparency, fully verified.</p>
+            </div>
+            <div class="treasury-value">
+                <div class="treasury-label">Total Treasury Value</div>
+                <div class="treasury-amount" data-count="248000">$0</div>
+            </div>
+            <div class="assets-grid">
+                <div class="asset-card">
+                    <div class="asset-icon">🎴</div>
+                    <div class="asset-info">
+                        <h4>PSA 10 Umbreon VMAX</h4>
+                        <p>Evolving Skies</p>
+                    </div>
+                    <div class="asset-value">$2,000</div>
+                </div>
+                <div class="asset-card">
+                    <div class="asset-icon">📦</div>
+                    <div class="asset-info">
+                        <h4>Sealed Pokemon Case</h4>
+                        <p>6x Booster Boxes</p>
+                    </div>
+                    <div class="asset-value">$8,000</div>
+                </div>
+                <div class="asset-card">
+                    <div class="asset-icon">🏆</div>
+                    <div class="asset-info">
+                        <h4>Vintage Base Set Booster</h4>
+                        <p>Heavy Pack</p>
+                    </div>
+                    <div class="asset-value">$5,500</div>
+                </div>
+                <div class="asset-card">
+                    <div class="asset-icon">🎴</div>
+                    <div class="asset-info">
+                        <h4>Black Lotus PSA 7</h4>
+                        <p>MTG Beta</p>
+                    </div>
+                    <div class="asset-value">$15,000</div>
+                </div>
+                <div class="asset-card">
+                    <div class="asset-icon">📦</div>
+                    <div class="asset-info">
+                        <h4>Magic Modern Horizons 2</h4>
+                        <p>Sealed Case</p>
+                    </div>
+                    <div class="asset-value">$4,200</div>
+                </div>
+                <div class="asset-card">
+                    <div class="asset-icon">💰</div>
+                    <div class="asset-info">
+                        <h4>Stablecoin Reserves</h4>
+                        <p>USDC/USDT</p>
+                    </div>
+                    <div class="asset-value">$45,000</div>
+                </div>
+            </div>
+            <div class="asset-categories">
+                <div class="asset-category">Graded Cards</div>
+                <div class="asset-category">Sealed Products</div>
+                <div class="asset-category">Stablecoins</div>
+                <div class="asset-category">Verified Assets</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Fractional Marketplace -->
+    <section id="marketplace">
+        <div class="container">
+            <div class="section-header">
+                <h2>Fractional Marketplace</h2>
+                <p>Own a piece of legendary cards. Trade fractions like stocks.</p>
+            </div>
+            <div class="marketplace-card">
+                <h3>Featured Asset</h3>
+                <div class="fraction-listing">
+                    <div class="fraction-header">
+                        <div class="fraction-img">🌙</div>
+                        <div>
+                            <div class="fraction-title">PSA 10 Umbreon VMAX</div>
+                            <div class="fraction-grade">Evolving Skies Alt Art</div>
+                        </div>
+                    </div>
+                    <div class="fraction-stats">
+                        <div>
+                            <div class="fraction-stat-label">Vault Value</div>
+                            <div class="fraction-stat-value">$2,000</div>
+                        </div>
+                        <div>
+                            <div class="fraction-stat-label">Shares</div>
+                            <div class="fraction-stat-value">2,000</div>
+                        </div>
+                        <div>
+                            <div class="fraction-stat-label">Price/Share</div>
+                            <div class="fraction-stat-value">$1.20</div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-primary btn-full" data-id="umbreon" data-name="PSA 10 Umbreon VMAX" data-price="1.20" data-icon="🌙" onclick="showQuantityModal(this.dataset.id, this.dataset.name, this.dataset.price, this.dataset.icon)">Buy Fractions</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Token Section -->
+    <section class="token" id="token">
+        <div class="container">
+            <div class="section-header">
+                <h2>Platform Token</h2>
+                <p>Powering the entire ecosystem with real utility</p>
+            </div>
+            <div class="token-grid">
+                <div class="token-visual">
+                    <div class="token-circle">
+                        <div class="token-content">
+                            <div class="token-supply-label">Total Supply</div>
+                            <div class="token-supply-value">10M</div>
+                            <div class="token-symbol">$VAULT</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="token-benefits">
+                    <ul class="benefits-list">
+                        <li>
+                            <div class="benefit-icon">%</div>
+                            <div>
+                                <strong>Break Discounts</strong>
+                                <p style="color: var(--text-muted); font-size: 0.9rem;">Save on every pack slot with token holdings</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="benefit-icon">🎁</div>
+                            <div>
+                                <strong>Staking Rewards</strong>
+                                <p style="color: var(--text-muted); font-size: 0.9rem;">Earn platform revenue share by staking</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="benefit-icon">🗳️</div>
+                            <div>
+                                <strong>Governance Voting</strong>
+                                <p style="color: var(--text-muted); font-size: 0.9rem;">Vote on treasury acquisitions and platform decisions</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="benefit-icon">🔄</div>
+                            <div>
+                                <strong>Marketplace Trading</strong>
+                                <p style="color: var(--text-muted); font-size: 0.9rem;">Use tokens for fractional share purchases</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Staking Section -->
+    <section id="staking">
+        <div class="container">
+            <div class="section-header">
+                <h2>Staking Rewards</h2>
+                <p>Earn passive income by staking your tokens</p>
+            </div>
+            <div class="staking-card">
+                <div class="apy-display">
+                    <div class="apy-label">Current APY</div>
+                    <div class="apy-value">24%</div>
+                </div>
+                <p class="staking-info">Stake your $VAULT tokens and receive a share of platform revenue. Monthly rewards are distributed automatically to all stakers based on their stake amount.</p>
+                <a href="#" class="btn-primary">Start Staking</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Revenue Flywheel -->
+    <section class="flywheel">
+        <div class="container">
+            <div class="section-header">
+                <h2>Revenue Flywheel</h2>
+                <p>How the platform creates sustainable value for token holders</p>
+            </div>
+            <div class="flywheel-diagram">
+                <div class="flywheel-step">Box Breaks</div>
+                <div class="flywheel-arrow">↓</div>
+                <div class="flywheel-step">Platform Profit</div>
+                <div class="flywheel-arrow">↓</div>
+                <div class="flywheel-step">Treasury Growth</div>
+                <div class="flywheel-arrow">↓</div>
+                <div class="flywheel-step">Token Buybacks</div>
+                <div class="flywheel-arrow">↓</div>
+                <div class="flywheel-step">Staking Rewards</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Community -->
+    <section id="community">
+        <div class="container">
+            <div class="section-header">
+                <h2>Join the Community</h2>
+                <p>Connect with thousands of collectors and investors</p>
+            </div>
+            <div class="social-links">
+                <a href="#" class="social-link">
+                    <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/>
+                    </svg>
+                    Discord
+                </a>
+                <a href="#" class="social-link">
+                    <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                    </svg>
+                    Telegram
+                </a>
+                <a href="#" class="social-link">
+                    <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                    Twitter
+                </a>
+                <a href="#" class="social-link">
+                    <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    </svg>
+                    YouTube Live
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Roadmap -->
+    <section class="roadmap" id="roadmap">
+        <div class="container">
+            <div class="section-header">
+                <h2>Roadmap</h2>
+                <p>Our journey to revolutionize card collecting</p>
+            </div>
+            <div class="roadmap-grid">
+                <div class="roadmap-phase completed">
+                    <div class="phase-badge">Completed</div>
+                    <h3>Phase 1</h3>
+                    <ul class="phase-items">
+                        <li>Launch break platform</li>
+                        <li>Treasury tracking system</li>
+                        <li>Live streaming integration</li>
+                        <li>Vault infrastructure</li>
+                    </ul>
+                </div>
+                <div class="roadmap-phase active">
+                    <div class="phase-badge">In Progress</div>
+                    <h3>Phase 2</h3>
+                    <ul class="phase-items">
+                        <li>Token launch</li>
+                        <li>Staking rewards</li>
+                        <li>Discount system</li>
+                        <li>Community governance</li>
+                    </ul>
+                </div>
+                <div class="roadmap-phase">
+                    <div class="phase-badge">Upcoming</div>
+                    <h3>Phase 3</h3>
+                    <ul class="phase-items">
+                        <li>Fractional vault</li>
+                        <li>Marketplace trading</li>
+                        <li>Asset buyouts</li>
+                        <li>Mobile app</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="#" class="logo">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 32px; height: 32px;">
+                            <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
+                            <path d="M7 8L7 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M12 8L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M17 8L17 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        TCG Vault Protocol
+                    </a>
+                    <p>The future of trading card collecting. Break, invest, and own fractional shares of rare collectibles.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Platform</h4>
+                    <ul>
+                        <li><a href="breaks.html">Live Breaks</a></li>
+                        <li><a href="cards.html">Cards</a></li>
+                        <li><a href="vault.html">Vault</a></li>
+                        <li><a href="marketplace.html">Fractions</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">API</a></li>
+                        <li><a href="#">Treasury</a></li>
+                        <li><a href="#">Brand Kit</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Press</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 TCG Vault Protocol. All rights reserved.</p>
+                <div class="footer-legal">
+                    <a href="#">Terms</a>
+                    <a href="#">Privacy</a>
+                    <a href="#">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Count up animation for stats
+        function animateValue(element, start, end, duration, prefix = '') {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const value = Math.floor(progress * (end - start) + start);
+                element.textContent = prefix + value.toLocaleString();
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const target = entry.target;
+                    const count = parseInt(target.getAttribute('data-count'));
+                    const isCurrency = target.classList.contains('treasury-amount') || target.closest('.stat');
+                    
+                    if (count) {
+                        animateValue(target, 0, count, 2000, isCurrency ? '$' : '');
+                    }
+                    
+                    observer.unobserve(target);
+                }
+            });
+        }, observerOptions);
+
+        // Observe all stat elements
+        document.querySelectorAll('[data-count]').forEach(el => observer.observe(el));
+
+        // Countdown timers
+        function updateTimers() {
+            document.querySelectorAll('.timer-value').forEach(timer => {
+                let time = parseInt(timer.getAttribute('data-time'));
+                if (time > 0) {
+                    time--;
+                    timer.setAttribute('data-time', time);
+                    
+                    const hours = Math.floor(time / 3600);
+                    const minutes = Math.floor((time % 3600) / 60);
+                    const seconds = time % 60;
+                    
+                    timer.textContent = 
+                        String(hours).padStart(2, '0') + ':' +
+                        String(minutes).padStart(2, '0') + ':' +
+                        String(seconds).padStart(2, '0');
+                }
+            });
+        }
+
+        setInterval(updateTimers, 1000);
+
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Navbar background on scroll
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.style.background = 'rgba(10, 10, 15, 0.98)';
+            } else {
+                nav.style.background = 'rgba(10, 10, 15, 0.95)';
+            }
+        });
+    </script>
+</body>
+</html>

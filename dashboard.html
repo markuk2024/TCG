@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard - TCG Vault Protocol</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+            padding-top: 8rem;
+        }
+        
+        .sidebar {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+        
+        .user-profile {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-yellow));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 1rem;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .user-email {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        
+        .nav-menu {
+            list-style: none;
+        }
+        
+        .nav-menu li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .nav-menu a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .nav-menu a:hover, .nav-menu a.active {
+            background: rgba(255, 222, 0, 0.1);
+            color: var(--accent-yellow);
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .balance-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .balance-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .balance-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .balance-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--accent-yellow);
+        }
+        
+        .balance-sub {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+        
+        .dashboard-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .view-all {
+            font-size: 0.85rem;
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+        
+        .activity-list {
+            list-style: none;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+        
+        .activity-details {
+            flex: 1;
+        }
+        
+        .activity-title {
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        
+        .activity-time {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+        
+        .activity-amount {
+            font-weight: 600;
+            color: var(--accent-yellow);
+        }
+        
+        .holdings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        
+        .holding-card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 1rem;
+        }
+        
+        .holding-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        
+        .holding-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .holding-shares {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        
+        .holding-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent-yellow);
+        }
+        
+        .kyc-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+        
+        .kyc-verified {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+        
+        .kyc-pending {
+            background: rgba(251, 191, 36, 0.15);
+            color: #fbbf24;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: static;
+            }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script src="web3-integration.js"></script>
+</head>
+<body class="home-watermark">
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
+                    <path d="M7 8L7 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M12 8L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M17 8L17 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                TCG Vault Protocol
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="breaks.html">Live Breaks</a></li>
+                <li><a href="cards.html">Cards</a></li>
+                <li><a href="vault.html">Vault</a></li>
+                <li><a href="marketplace.html">Fractions</a></li>
+                <li><a href="token.html">Token</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="whitepaper.html">Whitepaper</a></li>
+            </ul>
+            <a href="breaks.html" class="nav-cta">Join a Break</a>
+            <button id="connect-wallet-btn" class="wallet-connect" onclick="window.TCGWeb3.connectWallet()">Connect Wallet</button>
+            <span id="wallet-address" class="wallet-address" style="display:none;"></span>
+            <button class="mobile-menu-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="dashboard-grid">
+            <aside class="sidebar">
+                <div class="user-profile">
+                    <div class="user-avatar" id="user-avatar">👤</div>
+                    <div class="user-name" id="user-name">Not Connected</div>
+                    <div class="user-email" id="user-address" style="font-size:0.75rem;word-break:break-all;">Connect wallet to view</div>
+                    <span class="kyc-badge kyc-pending" id="wallet-status">⚠ Not Connected</span>
+                </div>
+                
+                <ul class="nav-menu">
+                    <li><a href="#overview" class="active">📊 Overview</a></li>
+                    <li><a href="#balances">💰 Balances</a></li>
+                    <li><a href="#holdings">🎴 My Holdings</a></li>
+                    <li><a href="#breaks">📦 My Breaks</a></li>
+                    <li><a href="#rewards">🎁 Staking Rewards</a></li>
+                    <li><a href="#history">📜 Activity History</a></li>
+                    <li><a href="#settings">⚙️ Settings</a></li>
+                </ul>
+            </aside>
+            
+            <main class="main-content">
+                <div class="balance-cards" id="balances">
+                    <div class="balance-card">
+                        <div class="balance-label">VAULT Balance</div>
+                        <div class="balance-value" id="vault-balance">--</div>
+                        <div class="balance-sub">$VAULT</div>
+                    </div>
+                    <div class="balance-card">
+                        <div class="balance-label">Staked</div>
+                        <div class="balance-value" id="staked-amount">--</div>
+                        <div class="balance-sub" id="stake-tier">Connect to view</div>
+                    </div>
+                    <div class="balance-card">
+                        <div class="balance-label">Pending Rewards</div>
+                        <div class="balance-value" id="pending-rewards">--</div>
+                        <div class="balance-sub">eVAULT</div>
+                    </div>
+                    <div class="balance-card">
+                        <div class="balance-label">eVAULT Balance</div>
+                        <div class="balance-value" id="evault-balance">--</div>
+                        <div class="balance-sub">Rewards Token</div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-section" id="holdings">
+                    <div class="section-title">
+                        My Fractional Holdings
+                        <a href="marketplace.html" class="view-all">View Marketplace →</a>
+                    </div>
+                    <div class="holdings-grid">
+                        <div class="holding-card">
+                            <div class="holding-header">
+                                <span class="holding-name">PSA 10 Charizard</span>
+                                <span class="holding-shares">50 shares</span>
+                            </div>
+                            <div class="holding-value">£65.00</div>
+                        </div>
+                        <div class="holding-card">
+                            <div class="holding-header">
+                                <span class="holding-name">PSA 10 Umbreon</span>
+                                <span class="holding-shares">100 shares</span>
+                            </div>
+                            <div class="holding-value">£120.00</div>
+                        </div>
+                        <div class="holding-card">
+                            <div class="holding-header">
+                                <span class="holding-name">Black Lotus PSA 7</span>
+                                <span class="holding-shares">25 shares</span>
+                            </div>
+                            <div class="holding-value">£50.00</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-section" id="breaks">
+                    <div class="section-title">
+                        Recent Breaks
+                        <a href="breaks.html" class="view-all">View All →</a>
+                    </div>
+                    <ul class="activity-list">
+                        <li class="activity-item">
+                            <div class="activity-icon">📦</div>
+                            <div class="activity-details">
+                                <div class="activity-title">Pokemon Scarlet & Violet Booster Box Break</div>
+                                <div class="activity-time">Purchased 3 spots • 2 days ago</div>
+                            </div>
+                            <div class="activity-amount">£36.00</div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon">🎴</div>
+                            <div class="activity-details">
+                                <div class="activity-title">Magic: The Gathering Lord of the Rings</div>
+                                <div class="activity-time">Purchased 2 spots • 5 days ago</div>
+                            </div>
+                            <div class="activity-amount">£25.00</div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon">📦</div>
+                            <div class="activity-details">
+                                <div class="activity-title">Yu-Gi-Oh! 25th Anniversary Collection</div>
+                                <div class="activity-time">Purchased 1 spot • 1 week ago</div>
+                            </div>
+                            <div class="activity-amount">£15.00</div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="dashboard-section" id="rewards">
+                    <div class="section-title">
+                        Staking Actions
+                        <a href="#" class="view-all" onclick="window.TCGWeb3.claimRewards(); return false;">Claim All Rewards</a>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                        <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📥</div>
+                            <h4 style="margin-bottom: 1rem;">Stake VAULT</h4>
+                            <input type="number" id="stake-amount" placeholder="Amount" style="width: 100%; padding: 0.5rem; margin-bottom: 0.5rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary);">
+                            <select id="stake-tier" style="width: 100%; padding: 0.5rem; margin-bottom: 0.5rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary);">
+                                <option value="0">30 Days (1.0x)</option>
+                                <option value="1">90 Days (1.5x)</option>
+                                <option value="2">180 Days (2.0x)</option>
+                                <option value="3">365 Days (3.0x)</option>
+                                <option value="4">Forever (4.0x)</option>
+                            </select>
+                            <button class="btn-primary btn-full" onclick="stakeVAULT()" style="width: 100%;">Stake</button>
+                        </div>
+                        <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📤</div>
+                            <h4 style="margin-bottom: 1rem;">Unstake</h4>
+                            <input type="number" id="unstake-amount" placeholder="Amount" style="width: 100%; padding: 0.5rem; margin-bottom: 0.5rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary);">
+                            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;">Penalties apply for early unstaking</p>
+                            <button class="btn-primary btn-full" onclick="unstakeVAULT()" style="width: 100%;">Unstake</button>
+                        </div>
+                        <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🎁</div>
+                            <h4 style="margin-bottom: 1rem;">Claim Rewards</h4>
+                            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Your pending rewards:</p>
+                            <p id="claim-rewards-display" style="font-size: 1.25rem; font-weight: 700; color: var(--accent-yellow); margin-bottom: 1rem;">--</p>
+                            <button class="btn-primary btn-full" onclick="window.TCGWeb3.claimRewards()" style="width: 100%;">Claim Now</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-section">
+                    <div class="section-title">
+                        Staking Rewards History
+                        <a href="token.html" class="view-all">Stake More →</a>
+                    </div>
+                    <ul class="activity-list">
+                        <li class="activity-item">
+                            <div class="activity-icon">🎁</div>
+                            <div class="activity-details">
+                                <div class="activity-title">Monthly Reward Distribution</div>
+                                <div class="activity-time">March 2026 • Auto-claimed</div>
+                            </div>
+                            <div class="activity-amount">+24.5 VAULT</div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon">🎁</div>
+                            <div class="activity-details">
+                                <div class="activity-title">Monthly Reward Distribution</div>
+                                <div class="activity-time">February 2026 • Auto-claimed</div>
+                            </div>
+                            <div class="activity-amount">+22.8 VAULT</div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon">📥</div>
+                            <div class="activity-details">
+                                <div class="activity-title">Staked 2,000 VAULT</div>
+                                <div class="activity-time">3 months ago</div>
+                            </div>
+                            <div class="activity-amount">Active</div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="dashboard-section" id="history">
+                    <div class="section-title">
+                        Recent Activity
+                        <a href="#" class="view-all">View All →</a>
+                    </div>
+                    <ul class="activity-list">
+                        <li class="activity-item">
+                            <div class="activity-icon">💰</div>
+                            <div class="activity-details">
+                                <div class="activity-title">Deposit £500</div>
+                                <div class="activity-time">Today • 10:23 AM</div>
+                            </div>
+                            <div class="activity-amount">+£500.00</div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon">🛒</div>
+                            <div class="activity-details">
+                                <div class="activity-title">Purchased 50 Shares - PSA 10 Charizard</div>
+                                <div class="activity-time">Yesterday • 3:45 PM</div>
+                            </div>
+                            <div class="activity-amount">-£65.00</div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon">📦</div>
+                            <div class="activity-details">
+                                <div class="activity-title">Break Spot Purchase</div>
+                                <div class="activity-time">2 days ago</div>
+                            </div>
+                            <div class="activity-amount">-£36.00</div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon">🎁</div>
+                            <div class="activity-details">
+                                <div class="activity-title">Claimed Staking Rewards</div>
+                                <div class="activity-time">3 days ago</div>
+                            </div>
+                            <div class="activity-amount">+24.5 VAULT</div>
+                        </li>
+                    </ul>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <footer style="margin-top: 4rem;">
+        <div class="footer-content">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 32px; height: 32px;">
+                            <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
+                            <path d="M7 8L7 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M12 8L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M17 8L17 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        TCG Vault Protocol
+                    </a>
+                    <p>The future of trading card collecting. Break, invest, and own fractional shares of rare collectibles.</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 TCG Vault Protocol. All rights reserved.</p>
+                <div class="footer-legal">
+                    <a href="#">Terms</a>
+                    <a href="#">Privacy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Dashboard Web3 Integration
+        async function updateDashboard() {
+            if (!window.TCGWeb3 || !window.TCGWeb3.isConnected) return;
+            
+            const web3 = window.TCGWeb3;
+            const addr = web3.userAddress;
+            
+            // Update user display
+            document.getElementById('user-name').textContent = addr.slice(0, 6) + '...' + addr.slice(-4);
+            document.getElementById('user-address').textContent = addr;
+            document.getElementById('wallet-status').textContent = '✓ Connected';
+            document.getElementById('wallet-status').className = 'kyc-badge kyc-verified';
+            document.getElementById('user-avatar').textContent = '🦊';
+            
+            // Load balances
+            try {
+                const vaultBal = await web3.getTokenBalance('VAULT', addr);
+                document.getElementById('vault-balance').textContent = web3.formatTokenAmount(vaultBal, 18, 2);
+            } catch (e) { console.error('VAULT balance error:', e); }
+            
+            try {
+                const evaultBal = await web3.getTokenBalance('eVAULT', addr);
+                document.getElementById('evault-balance').textContent = web3.formatTokenAmount(evaultBal, 18, 2);
+            } catch (e) { console.error('eVAULT balance error:', e); }
+            
+            try {
+                const pending = await web3.getPendingRewards(addr);
+                document.getElementById('pending-rewards').textContent = web3.formatTokenAmount(pending, 18, 4);
+                document.getElementById('claim-rewards-display').textContent = web3.formatTokenAmount(pending, 18, 4) + ' eVAULT';
+            } catch (e) { console.error('Pending rewards error:', e); }
+            
+            try {
+                const stakeInfo = await web3.getStakeInfo(addr);
+                if (stakeInfo.amount > 0) {
+                    document.getElementById('staked-amount').textContent = web3.formatTokenAmount(stakeInfo.amount, 18, 2);
+                    const tiers = ['30 Days', '90 Days', '180 Days', '365 Days', 'Forever'];
+                    document.getElementById('stake-tier').textContent = tiers[stakeInfo.tier] + ' Tier';
+                } else {
+                    document.getElementById('staked-amount').textContent = '0';
+                    document.getElementById('stake-tier').textContent = 'Not Staked';
+                }
+            } catch (e) { console.error('Stake info error:', e); }
+        }
+        
+        async function stakeVAULT() {
+            const amount = document.getElementById('stake-amount').value;
+            const tier = parseInt(document.getElementById('stake-tier').value);
+            if (!amount || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            try {
+                await window.TCGWeb3.stakeTokens(amount, tier);
+                alert('Stake successful!');
+                updateDashboard();
+            } catch (e) {
+                alert('Stake failed: ' + e.message);
+            }
+        }
+        
+        async function unstakeVAULT() {
+            const amount = document.getElementById('unstake-amount').value;
+            if (!amount || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            if (!confirm('Unstaking early may incur penalties. Continue?')) return;
+            try {
+                await window.TCGWeb3.unstakeTokens(amount);
+                alert('Unstake successful!');
+                updateDashboard();
+            } catch (e) {
+                alert('Unstake failed: ' + e.message);
+            }
+        }
+        
+        // Update dashboard when wallet connects
+        window.addEventListener('web3-connected', updateDashboard);
+        window.addEventListener('web3-disconnected', () => location.reload());
+        
+        // Auto-update every 30 seconds
+        setInterval(updateDashboard, 30000);
+    </script>
+</body>
+</html>

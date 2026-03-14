@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - TCG Vault Protocol</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .checkout-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding-top: 8rem;
+            padding-bottom: 4rem;
+        }
+        
+        .checkout-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        .order-summary {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            height: fit-content;
+        }
+        
+        .order-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .order-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .order-item:last-child {
+            border-bottom: none;
+        }
+        
+        .order-image {
+            width: 60px;
+            height: 60px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .order-details {
+            flex: 1;
+        }
+        
+        .order-name {
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        
+        .order-meta {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+        
+        .order-price {
+            font-weight: 600;
+            color: var(--accent-yellow);
+        }
+        
+        .order-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid var(--border-color);
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .payment-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+        
+        .payment-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        
+        .payment-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .payment-option {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .payment-option:hover {
+            border-color: var(--accent-yellow);
+        }
+        
+        .payment-option.selected {
+            border-color: var(--accent-blue);
+            background: rgba(59, 76, 202, 0.1);
+        }
+        
+        .payment-radio {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .payment-option.selected .payment-radio {
+            border-color: var(--accent-blue);
+            background: var(--accent-blue);
+        }
+        
+        .payment-radio::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0;
+        }
+        
+        .payment-option.selected .payment-radio::after {
+            opacity: 1;
+        }
+        
+        .payment-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+        
+        .payment-info {
+            flex: 1;
+        }
+        
+        .payment-label {
+            font-weight: 500;
+        }
+        
+        .payment-sublabel {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+        
+        .payment-discount {
+            background: var(--success);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .token-balance {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .token-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .token-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .token-value {
+            font-weight: 600;
+            color: var(--accent-yellow);
+        }
+        
+        .secure-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-top: 1.5rem;
+            justify-content: center;
+        }
+        
+        @media (max-width: 768px) {
+            .checkout-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="home-watermark">
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
+                    <path d="M7 8L7 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M12 8L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M17 8L17 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                TCG Vault Protocol
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="breaks.html">Live Breaks</a></li>
+                <li><a href="cards.html">Cards</a></li>
+                <li><a href="vault.html">Vault</a></li>
+                <li><a href="marketplace.html">Fractions</a></li>
+                <li><a href="token.html">Token</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+            </ul>
+            <a href="breaks.html" class="nav-cta">Join a Break</a>
+            <button class="mobile-menu-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <div class="checkout-container">
+        <h1 style="text-align: center; margin-bottom: 2rem;">Checkout</h1>
+        
+        <div class="checkout-grid">
+            <div class="order-summary">
+                <div class="order-title">Order Summary</div>
+                
+                <div class="order-item">
+                    <div class="order-image">🌙</div>
+                    <div class="order-details">
+                        <div class="order-name">PSA 10 Umbreon VMAX</div>
+                        <div class="order-meta">Alt Art • Evolving Skies</div>
+                    </div>
+                    <div class="order-price">£500.00</div>
+                </div>
+                
+                <div class="order-item">
+                    <div class="order-image">📦</div>
+                    <div class="order-details">
+                        <div class="order-name">Break Spot #3</div>
+                        <div class="order-meta">Pokemon XY Evolutions</div>
+                    </div>
+                    <div class="order-price">£12.00</div>
+                </div>
+                
+                <div class="order-total">
+                    <span>Total</span>
+                    <span style="color: var(--accent-yellow);">£512.00</span>
+                </div>
+            </div>
+            
+            <div class="payment-section">
+                <div class="payment-title">Select Payment Method</div>
+                
+                <div class="token-balance">
+                    <div class="token-row">
+                        <span class="token-label">Your Token Balance</span>
+                        <span class="token-value">5,250 VAULT</span>
+                    </div>
+                    <div class="token-row" style="margin-top: 0.5rem;">
+                        <span class="token-label">Value</span>
+                        <span class="token-value">~£1,312.50</span>
+                    </div>
+                </div>
+                
+                <div class="payment-methods">
+                    <div class="payment-option selected" onclick="selectPayment('card')">
+                        <div class="payment-radio"></div>
+                        <div class="payment-icon">💳</div>
+                        <div class="payment-info">
+                            <div class="payment-label">Card / Apple Pay</div>
+                            <div class="payment-sublabel">Credit or debit card</div>
+                        </div>
+                    </div>
+                    
+                    <div class="payment-option" onclick="selectPayment('token')">
+                        <div class="payment-radio"></div>
+                        <div class="payment-icon">🪙</div>
+                        <div class="payment-info">
+                            <div class="payment-label">Platform Token</div>
+                            <div class="payment-sublabel">Pay with $VAULT</div>
+                        </div>
+                        <span class="payment-discount">10% OFF</span>
+                    </div>
+                </div>
+                
+                <button class="btn-primary btn-full" style="padding: 1rem; font-size: 1.1rem;" onclick="processPayment()">
+                    Pay £512.00
+                </button>
+                
+                <div class="secure-badge">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    Secure payment processed by Stripe
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer style="margin-top: 2rem;">
+        <div class="footer-content">
+            <div class="footer-bottom" style="border-top: none;">
+                <p>&copy; 2024 TCG Vault Protocol. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let selectedPayment = 'card';
+        
+        function selectPayment(method) {
+            selectedPayment = method;
+            document.querySelectorAll('.payment-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            
+            // Update button text
+            const button = document.querySelector('.btn-primary');
+            if (method === 'token') {
+                const discounted = (512 * 0.9).toFixed(2);
+                button.textContent = `Pay ${discounted} VAULT (10% off)`;
+            } else {
+                button.textContent = 'Pay £512.00';
+            }
+        }
+        
+        function processPayment() {
+            if (selectedPayment === 'card') {
+                // Stripe integration would go here
+                alert('Redirecting to Stripe Checkout...');
+            } else {
+                // Token wallet transaction
+                alert('Processing token payment from your wallet...');
+            }
+        }
+    </script>
+</body>
+</html>

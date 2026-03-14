@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vault Treasury - TCG Vault Protocol</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script src="web3-integration.js"></script>
+</head>
+<body class="vault-watermark">
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
+                    <path d="M7 8L7 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M12 8L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M17 8L17 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                TCG Vault Protocol
+            </a>
+            <ul class="nav-links">
+                <li><a href="breaks.html">Breaks</a></li>
+                <li><a href="vault.html" class="active">Vault</a></li>
+                <li><a href="marketplace.html">Fractions</a></li>
+                <li><a href="token.html">Token</a></li>
+                <li><a href="cards.html">Cards</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="transparency.html">Transparency</a></li>
+                <li><a href="whitepaper.html">Whitepaper</a></li>
+            </ul>
+            <a href="breaks.html" class="nav-cta">Join a Break</a>
+            <button id="connect-wallet-btn" class="wallet-connect" onclick="window.TCGWeb3.connectWallet()">Connect Wallet</button>
+            <span id="wallet-address" class="wallet-address" style="display:none;"></span>
+            <button class="mobile-menu-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Vault Treasury Section -->
+    <section class="vault" style="padding-top: 8rem;">
+        <div class="container">
+            <div class="section-header">
+                <h2>Vault Treasury</h2>
+                <p>Real assets backing the platform. Full transparency, fully verified.</p>
+            </div>
+            <div class="treasury-value">
+                <div class="treasury-label">Total Treasury Value</div>
+                <div class="treasury-amount" data-count="248000">$0</div>
+            </div>
+            <div class="assets-grid">
+                <div class="asset-card" data-card-id="1">
+                    <div class="asset-icon">🌙</div>
+                    <div class="asset-info">
+                        <h4>PSA 10 Umbreon VMAX</h4>
+                        <p>Evolving Skies Alt Art</p>
+                    </div>
+                    <div class="asset-value">$2,000</div>
+                    <button class="btn-primary" style="margin-top:0.5rem;width:100%;font-size:0.8rem;padding:0.5rem;" onclick="showBuyoutModal(1, 'PSA 10 Umbreon VMAX', 2000, 2500)">Propose Buyout</button>
+                </div>
+                <div class="asset-card">
+                    <div class="asset-icon">📦</div>
+                    <div class="asset-info">
+                        <h4>Sealed Pokemon Case</h4>
+                        <p>6x Booster Boxes</p>
+                    </div>
+                    <div class="asset-value">$8,000</div>
+                </div>
+                <div class="asset-card">
+                    <div class="asset-icon">🏆</div>
+                    <div class="asset-info">
+                        <h4>Vintage Base Set Booster</h4>
+                        <p>Heavy Pack</p>
+                    </div>
+                    <div class="asset-value">$5,500</div>
+                </div>
+                <div class="asset-card" data-card-id="3">
+                    <div class="asset-icon">⚫</div>
+                    <div class="asset-info">
+                        <h4>Black Lotus PSA 7</h4>
+                        <p>MTG Beta</p>
+                    </div>
+                    <div class="asset-value">$15,000</div>
+                    <button class="btn-primary" style="margin-top:0.5rem;width:100%;font-size:0.8rem;padding:0.5rem;" onclick="showBuyoutModal(3, 'Black Lotus PSA 7', 15000, 18750)">Propose Buyout</button>
+                </div>
+                <div class="asset-card">
+                    <div class="asset-icon">📦</div>
+                    <div class="asset-info">
+                        <h4>Magic Modern Horizons 2</h4>
+                        <p>Sealed Case</p>
+                    </div>
+                    <div class="asset-value">$4,200</div>
+                </div>
+                <div class="asset-card">
+                    <div class="asset-icon">💰</div>
+                    <div class="asset-info">
+                        <h4>Stablecoin Reserves</h4>
+                        <p>USDC/USDT</p>
+                    </div>
+                    <div class="asset-value">$45,000</div>
+                </div>
+                <div class="asset-card" data-card-id="2">
+                    <div class="asset-icon">🔥</div>
+                    <div class="asset-info">
+                        <h4>Charizard VMAX PSA 10</h4>
+                        <p>Darkness Ablaze</p>
+                    </div>
+                    <div class="asset-value">$3,500</div>
+                    <button class="btn-primary" style="margin-top:0.5rem;width:100%;font-size:0.8rem;padding:0.5rem;" onclick="showBuyoutModal(2, 'Charizard VMAX PSA 10', 3500, 4375)">Propose Buyout</button>
+                </div>
+                <div class="asset-card">
+                    <div class="asset-icon">📦</div>
+                    <div class="asset-info">
+                        <h4>Pokemon Celebrations Case</h4>
+                        <p>Sealed ETBs</p>
+                    </div>
+                    <div class="asset-value">$6,800</div>
+                </div>
+                <div class="asset-card">
+                    <div class="asset-icon">🎴</div>
+                    <div class="asset-info">
+                        <h4>Mox Pearl BGS 8.5</h4>
+                        <p>MTG Unlimited</p>
+                    </div>
+                    <div class="asset-value">$8,500</div>
+                </div>
+            </div>
+            <div class="asset-categories">
+                <div class="asset-category">Graded Cards</div>
+                <div class="asset-category">Sealed Products</div>
+                <div class="asset-category">Stablecoins</div>
+                <div class="asset-category">Verified Assets</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Revenue Flywheel -->
+    <section class="flywheel">
+        <div class="container">
+            <div class="section-header">
+                <h2>Revenue Flywheel</h2>
+                <p>How the platform creates sustainable value for token holders</p>
+            </div>
+            <div class="flywheel-diagram">
+                <div class="flywheel-step">Box Breaks</div>
+                <div class="flywheel-arrow">↓</div>
+                <div class="flywheel-step">Platform Profit</div>
+                <div class="flywheel-arrow">↓</div>
+                <div class="flywheel-step">Treasury Growth</div>
+                <div class="flywheel-arrow">↓</div>
+                <div class="flywheel-step">Token Buybacks</div>
+                <div class="flywheel-arrow">↓</div>
+                <div class="flywheel-step">Staking Rewards</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 32px; height: 32px;">
+                            <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
+                            <path d="M7 8L7 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M12 8L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M17 8L17 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        TCG Vault Protocol
+                    </a>
+                    <p>The future of trading card collecting. Break, invest, and own fractional shares of rare collectibles.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Platform</h4>
+                    <ul>
+                        <li><a href="breaks.html">Live Breaks</a></li>
+                        <li><a href="vault.html">Vault</a></li>
+                        <li><a href="marketplace.html">Marketplace</a></li>
+                        <li><a href="token.html">Token</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">API</a></li>
+                        <li><a href="#">Treasury</a></li>
+                        <li><a href="#">Brand Kit</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Press</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 TCG Vault Protocol. All rights reserved.</p>
+                <div class="footer-legal">
+                    <a href="#">Terms</a>
+                    <a href="#">Privacy</a>
+                    <a href="#">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    
+    <!-- Buyout Modal -->
+    <div id="buyout-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 2rem; max-width: 450px; width: 90%;">
+            <h3 id="buyout-title" style="margin-bottom: 1.5rem; text-align: center;">Propose Buyout</h3>
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <span style="font-size: 3rem;">💎</span>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted);">Card ID</label>
+                <input type="number" id="buyout-card-id" readonly style="width: 100%; padding: 0.75rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary);">
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted);">Payment Token</label>
+                <select id="buyout-payment-token" style="width: 100%; padding: 0.75rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary);">
+                    <option value="usdc">USDC</option>
+                    <option value="usdt">USDT</option>
+                </select>
+            </div>
+            <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span style="color: var(--text-muted);">Vault Value:</span>
+                    <span id="buyout-vault-value">$0</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span style="color: var(--text-muted);">Buyout Value (+25%):</span>
+                    <span id="buyout-buyout-value" style="color: var(--accent-yellow); font-weight: 600;">$0</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted);">
+                    <span>Platform Fee (2.5%):</span>
+                    <span id="buyout-fee">$0</span>
+                </div>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                Proposing a buyout requires holding shares in this card. Shareholders will vote on your proposal.
+            </p>
+            <div style="display: flex; gap: 1rem;">
+                <button class="btn-secondary" onclick="closeBuyoutModal()" style="flex: 1;">Cancel</button>
+                <button class="btn-primary" onclick="confirmBuyout()" style="flex: 1;">Propose Buyout</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentBuyoutCardId = null;
+        
+        function showBuyoutModal(cardId, name, vaultValue, buyoutValue) {
+            if (!window.TCGWeb3 || !window.TCGWeb3.isConnected) {
+                alert('Please connect your wallet first');
+                window.TCGWeb3.connectWallet();
+                return;
+            }
+            currentBuyoutCardId = cardId;
+            
+            document.getElementById('buyout-title').textContent = 'Buyout: ' + name;
+            document.getElementById('buyout-card-id').value = cardId;
+            document.getElementById('buyout-vault-value').textContent = '$' + vaultValue.toLocaleString();
+            document.getElementById('buyout-buyout-value').textContent = '$' + buyoutValue.toLocaleString();
+            document.getElementById('buyout-fee').textContent = '$' + (buyoutValue * 0.025).toFixed(2);
+            
+            document.getElementById('buyout-modal').style.display = 'flex';
+        }
+        
+        function closeBuyoutModal() {
+            document.getElementById('buyout-modal').style.display = 'none';
+        }
+        
+        async function confirmBuyout() {
+            const paymentToken = document.getElementById('buyout-payment-token').value;
+            
+            try {
+                await window.TCGWeb3.proposeBuyout(currentBuyoutCardId, paymentToken);
+                alert('Buyout proposal submitted! Shareholders can now vote.');
+                closeBuyoutModal();
+            } catch (e) {
+                alert('Buyout proposal failed: ' + e.message);
+            }
+        }
+        
+        // Close modal on outside click
+        document.getElementById('buyout-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeBuyoutModal();
+        });
+        
+        // Load treasury value from contract
+        async function updateTreasuryValue() {
+            if (!window.TCGWeb3 || !window.TCGWeb3.isConnected) return;
+            
+            try {
+                // This would ideally fetch from the protocol contract
+                // For now, we keep the static display
+            } catch (e) {
+                console.error('Treasury update error:', e);
+            }
+        }
+        
+        window.addEventListener('web3-connected', updateTreasuryValue);
+    </script>
+</body>
+</html>

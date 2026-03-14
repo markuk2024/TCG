@@ -1,0 +1,22 @@
+{
+  "name": "tcg-vault-protocol",
+  "version": "1.0.0",
+  "description": "Smart contracts for TCG Vault Protocol - Fractional trading card marketplace on BSC",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:testnet": "hardhat run deploy.js --network bsctestnet",
+    "deploy:mainnet": "hardhat run deploy.js --network bscmainnet",
+    "verify": "hardhat verify",
+    "node": "hardhat node"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.9.3"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
+    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
+    "dotenv": "^16.6.1",
+    "hardhat": "^2.17.0"
+  }
+}

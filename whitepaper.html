@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whitepaper - TCG Vault Protocol</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .whitepaper-hero {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, rgba(59, 76, 202, 0.15), rgba(255, 222, 0, 0.1));
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .whitepaper-hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .whitepaper-hero p {
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+        }
+        
+        .whitepaper-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+        
+        .whitepaper-section {
+            margin-bottom: 4rem;
+        }
+        
+        .whitepaper-section h2 {
+            color: var(--accent-yellow);
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .whitepaper-section h3 {
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            margin: 2rem 0 1rem;
+        }
+        
+        .whitepaper-section p {
+            color: var(--text-muted);
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+        
+        .whitepaper-section ul {
+            margin: 1rem 0 1.5rem 1.5rem;
+            color: var(--text-muted);
+        }
+        
+        .whitepaper-section li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+        
+        .whitepaper-section strong {
+            color: var(--text-primary);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .stat-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-yellow);
+            display: block;
+        }
+        
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        
+        .token-distribution {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .distribution-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .distribution-item:last-child {
+            border-bottom: none;
+        }
+        
+        .allocation-bar {
+            height: 8px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .allocation-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-yellow));
+        }
+        
+        .roadmap-phase {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .roadmap-phase h4 {
+            color: var(--accent-yellow);
+            margin-bottom: 1rem;
+        }
+        
+        .roadmap-phase ul {
+            margin: 0;
+            padding-left: 1.5rem;
+        }
+        
+        .roadmap-phase li {
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+        
+        .download-section {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .whitepaper-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .whitepaper-content {
+                padding: 2rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="whitepaper-watermark">
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 32px; height: 32px;">
+                    <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
+                    <path d="M7 8L7 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M12 8L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M17 8L17 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                TCG Vault Protocol
+            </a>
+            <div class="nav-links">
+                <a href="breaks.html">Breaks</a>
+                <a href="vault.html">Vault</a>
+                <a href="marketplace.html">Fractions</a>
+                <a href="token.html">Token</a>
+                <a href="cards.html">Cards</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="transparency.html">Transparency</a>
+                <a href="whitepaper.html" class="active">Whitepaper</a>
+            </div>
+            <button class="mobile-menu-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <div class="whitepaper-hero">
+        <h1>TCG Vault Protocol Whitepaper</h1>
+        <p>The Future of Trading Card Collecting: Breaking, Investing, and Fractional Ownership</p>
+    </div>
+
+    <div class="whitepaper-content">
+        <div class="whitepaper-section">
+            <h2>Executive Summary</h2>
+            <p>TCG Vault Protocol is a revolutionary platform that combines the excitement of trading card box breaks with decentralized finance mechanics. Our platform enables collectors to participate in live box breaks, invest in fractional shares of high-value cards through our vault system, and earn rewards through our native $VAULT token.</p>
+            
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <span class="stat-value">15,000+</span>
+                    <div class="stat-label">Boxes Opened</div>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-value">$2.4M+</span>
+                    <div class="stat-label">Vault Value</div>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-value">8,200+</span>
+                    <div class="stat-label">Active Collectors</div>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-value">24%</span>
+                    <div class="stat-label">APY Staking</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="whitepaper-section">
+            <h2>Problem Statement</h2>
+            <h3>1. Accessibility Barriers</h3>
+            <ul>
+                <li>High-value cards ($10,000+) are out of reach for most collectors</li>
+                <li>Premium box breaks require significant capital ($500-2000/box)</li>
+                <li>No way for small investors to diversify across multiple high-value assets</li>
+            </ul>
+            
+            <h3>2. Lack of Transparency</h3>
+            <ul>
+                <li>Breaks happen on streaming platforms with no verification</li>
+                <li>No proof of ownership or asset backing</li>
+                <li>Counterfeit cards flood the market</li>
+            </ul>
+            
+            <h3>3. Illiquidity</h3>
+            <ul>
+                <li>Graded cards take weeks/months to sell</li>
+                <li>No secondary market for fractional positions</li>
+                <li>High transaction fees on traditional marketplaces (10-15%)</li>
+            </ul>
+        </div>
+
+        <div class="whitepaper-section">
+            <h2>Solution Overview</h2>
+            <p>TCG Vault Protocol creates a comprehensive ecosystem addressing all three problems through three core pillars:</p>
+            
+            <h3>Pillar 1: Live Box Breaks with Blockchain Verification</h3>
+            <ul>
+                <li>Multi-signature break verification</li>
+                <li>Instant NFT receipts for pulled cards</li>
+                <li>Automated vaulting for cards >$100 value</li>
+                <li>Integration with PSA/BGS for instant grading referrals</li>
+            </ul>
+            
+            <h3>Pillar 2: The Vault & Fractional Marketplace</h3>
+            <ul>
+                <li>Premium cards (PSA 10, BGS 9.5+) stored in insured, temperature-controlled facilities</li>
+                <li>Each card tokenized into 1,000-10,000 fractional shares</li>
+                <li>Minimum $10 investment in $50,000+ cards</li>
+                <li>Secondary market liquidity for shares</li>
+            </ul>
+            
+            <h3>Pillar 3: The $VAULT Token Ecosystem</h3>
+            <ul>
+                <li>5-20% break discounts based on holdings</li>
+                <li>24% APY from platform revenue share</li>
+                <li>Governance rights for platform decisions</li>
+                <li>Exclusive access to premium breaks</li>
+            </ul>
+        </div>
+
+        <div class="whitepaper-section">
+            <h2>Tokenomics</h2>
+            <p><strong>Total Supply:</strong> 10,000,000 VAULT (Fixed)</p>
+            
+            <div class="token-distribution">
+                <div class="distribution-item">
+                    <span>Community Rewards</span>
+                    <span>40% (4,000,000)</span>
+                </div>
+                <div class="allocation-bar">
+                    <div class="allocation-fill" style="width: 40%"></div>
+                </div>
+                
+                <div class="distribution-item">
+                    <span>Treasury Reserve</span>
+                    <span>25% (2,500,000)</span>
+                </div>
+                <div class="allocation-bar">
+                    <div class="allocation-fill" style="width: 25%"></div>
+                </div>
+                
+                <div class="distribution-item">
+                    <span>Team & Advisors</span>
+                    <span>20% (2,000,000)</span>
+                </div>
+                <div class="allocation-bar">
+                    <div class="allocation-fill" style="width: 20%"></div>
+                </div>
+                
+                <div class="distribution-item">
+                    <span>Liquidity Pools</span>
+                    <span>10% (1,000,000)</span>
+                </div>
+                <div class="allocation-bar">
+                    <div class="allocation-fill" style="width: 10%"></div>
+                </div>
+                
+                <div class="distribution-item">
+                    <span>Marketing</span>
+                    <span>5% (500,000)</span>
+                </div>
+                <div class="allocation-bar">
+                    <div class="allocation-fill" style="width: 5%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="whitepaper-section">
+            <h2>Revenue Model</h2>
+            <ul>
+                <li><strong>Box Break Commission:</strong> 15% on standard breaks (Primary revenue source)</li>
+                <li><strong>Fractional Trading Fees:</strong> 2% on every share trade</li>
+                <li><strong>Vault Storage Fees:</strong> 0.5% annually on vaulted cards</li>
+                <li><strong>Grading Partnerships:</strong> Referral fees from PSA/BGS/CGC</li>
+                <li><strong>Secondary Market Royalty:</strong> 2.5% on NFT resales</li>
+            </ul>
+            
+            <h3>Revenue Distribution</h3>
+            <ul>
+                <li>40% to stakers</li>
+                <li>30% to treasury growth</li>
+                <li>20% to development/marketing</li>
+                <li>10% to team</li>
+            </ul>
+        </div>
+
+        <div class="whitepaper-section">
+            <h2>Technology Stack</h2>
+            <ul>
+                <li><strong>Primary Chain:</strong> Ethereum L2 (Polygon)</li>
+                <li><strong>Smart Contracts:</strong> ERC-20 ($VAULT), ERC-721 (Card NFTs), ERC-1155 (Fractional shares)</li>
+                <li><strong>Oracle Integration:</strong> Chainlink VRF for randomization</li>
+                <li><strong>API Layer:</strong> Node.js + Express</li>
+                <li><strong>Database:</strong> PostgreSQL + Redis</li>
+                <li><strong>Frontend:</strong> React + TypeScript</li>
+            </ul>
+        </div>
+
+        <div class="whitepaper-section">
+            <h2>Roadmap</h2>
+            
+            <div class="roadmap-phase">
+                <h4>Phase 1: Foundation (Completed Q1 2024)</h4>
+                <ul>
+                    <li>✅ Live break platform launch</li>
+                    <li>✅ Vault infrastructure</li>
+                    <li>✅ Treasury tracking system</li>
+                    <li>✅ Smart contract audits</li>
+                </ul>
+            </div>
+            
+            <div class="roadmap-phase">
+                <h4>Phase 2: Token Launch (Current - Q2 2024)</h4>
+                <ul>
+                    <li>🔄 Token smart contracts</li>
+                    <li>🔄 Staking mechanism</li>
+                    <li>🔄 Governance framework</li>
+                    <li>🔄 DEX listing</li>
+                </ul>
+            </div>
+            
+            <div class="roadmap-phase">
+                <h4>Phase 3: Fractional Vault (Q3 2024)</h4>
+                <ul>
+                    <li>📅 Tokenization of first 100 cards</li>
+                    <li>📅 Fractional marketplace launch</li>
+                    <li>📅 Buyout mechanism live</li>
+                    <li>📅 Mobile app beta</li>
+                </ul>
+            </div>
+            
+            <div class="roadmap-phase">
+                <h4>Phase 4: Scale (Q4 2024)</h4>
+                <ul>
+                    <li>📅 Multi-chain support</li>
+                    <li>📅 Sports card integration</li>
+                    <li>📅 Partnership with major breakers</li>
+                    <li>📅 Global shipping infrastructure</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="whitepaper-section">
+            <h2>Vision</h2>
+            <p>"To democratize access to the world's most valuable trading cards while creating the most transparent, engaging, and rewarding collecting experience ever built."</p>
+            
+            <h3>Core Values</h3>
+            <ul>
+                <li><strong>Transparency:</strong> Every action verifiable on-chain</li>
+                <li><strong>Accessibility:</strong> $10 minimum investment, global access</li>
+                <li><strong>Community:</strong> Collectors first, always</li>
+                <li><strong>Sustainability:</strong> Revenue-backed, not hype-driven</li>
+            </ul>
+        </div>
+
+        <div class="whitepaper-section">
+            <h2>Conclusion</h2>
+            <p>TCG Vault Protocol represents the convergence of three powerful trends: the explosion of trading card collecting as an asset class, the maturation of DeFi infrastructure, and the demand for transparent, engaging online experiences.</p>
+            <p>The $VAULT token isn't just a speculative asset—it's a share in a real, revenue-generating business with tangible backing in the form of the world's most valuable trading cards.</p>
+        </div>
+    </div>
+
+    <div class="download-section">
+        <h3 style="margin-bottom: 1rem;">Download Full Whitepaper</h3>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Get the complete detailed whitepaper with financial projections, team information, and legal disclaimers.</p>
+        <a href="WHITEPAPER.md" class="btn-primary download-btn" download>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Download Whitepaper (MD)
+        </a>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 32px; height: 32px;">
+                            <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
+                            <path d="M7 8L7 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M12 8L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M17 8L17 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        TCG Vault Protocol
+                    </a>
+                    <p>Full transparency in trading card collecting. View our treasury, audits, and on-chain data in real-time.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="https://etherscan.io" target="_blank">Etherscan</a></li>
+                        <li><a href="https://debank.com" target="_blank">DeBank</a></li>
+                        <li><a href="WHITEPAPER.md" download>Whitepaper</a></li>
+                        <li><a href="TECHNICAL_ARCHITECTURE.md">Technical Docs</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 TCG Vault Protocol. All rights reserved.</p>
+                <div class="footer-legal">
+                    <a href="#">Terms</a>
+                    <a href="#">Privacy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
