@@ -84,6 +84,21 @@ contract TCGVaultProtocol is Ownable, ReentrancyGuard, Pausable {
     mapping(uint256 => BreakType) public breakTypes;
     uint256 public breakTypeCount;
     
+    // Order tracking system
+    struct Order {
+        uint256 orderId;
+        address buyer;
+        uint256 breakId;
+        uint256 quantity;
+        uint256 totalPaid;
+        uint256 timestamp;
+        bool fulfilled;
+    }
+    
+    mapping(uint256 => Order) public orders;
+    uint256 public orderCount;
+    mapping(address => uint256[]) public userOrders;
+    
     // Supported payment tokens (USDC, USDT, eVAULT)
     mapping(address => bool) public supportedTokens;
     
@@ -139,6 +154,15 @@ contract TCGVaultProtocol is Ownable, ReentrancyGuard, Pausable {
         uint256 totalPaid,
         uint256 packCostAmount,
         uint256 profitAmount
+    );
+    
+    event OrderCreated(
+        uint256 indexed orderId,
+        address indexed buyer,
+        uint256 indexed breakId,
+        uint256 quantity,
+        uint256 totalPaid,
+        uint256 timestamp
     );
     
     event RevenueDistributed(
@@ -743,6 +767,28 @@ contract TCGVaultProtocol is Ownable, ReentrancyGuard, Pausable {
         // Record purchase
         userBreakPurchases[msg.sender].push(breakId);
         
+        // Create order with unique order ID
+        uint256 orderId = orderCount++;
+        orders[orderId] = Order({
+            orderId: orderId,
+            buyer: msg.sender,
+            breakId: breakId,
+            quantity: quantity,
+            totalPaid: totalRevenue,
+            timestamp: block.timestamp,
+            fulfilled: false
+        });
+        userOrders[msg.sender].push(orderId);
+        
+        emit OrderCreated(
+            orderId,
+            msg.sender,
+            breakId,
+            quantity,
+            totalRevenue,
+            block.timestamp
+        );
+        
         emit BreakPurchase(
             msg.sender,
             breakId,
@@ -968,6 +1014,52 @@ contract TCGVaultProtocol is Ownable, ReentrancyGuard, Pausable {
     }
     
     // ============ VIEW FUNCTIONS ============
+    
+    /**
+     * @dev Get order details by order ID
+     */
+    function getOrder(uint256 orderId) external view returns (
+        uint256 id,
+        address buyer,
+        uint256 breakId,
+        uint256 quantity,
+        uint256 totalPaid,
+        uint256 timestamp,
+        bool fulfilled
+    ) {
+        Order storage o = orders[orderId];
+        return (o.orderId, o.buyer, o.breakId, o.quantity, o.totalPaid, o.timestamp, o.fulfilled);
+    }
+    
+    /**
+     * @dev Get all orders for a user
+     */
+    function getUserOrders(address user) external view returns (uint256[] memory) {
+        return userOrders[user];
+    }
+    
+    /**
+     * @dev Get total number of orders
+     */
+    function getTotalOrders() external view returns (uint256) {
+        return orderCount;
+    }
+    
+    /**
+     * @dev Get recent orders (for dashboard analytics)
+     * Returns last N orders in reverse chronological order
+     */
+    function getRecentOrders(uint256 count) external view returns (uint256[] memory) {
+        uint256 total = orderCount;
+        uint256 resultCount = count > total ? total : count;
+        uint256[] memory recentOrderIds = new uint256[](resultCount);
+        
+        for (uint256 i = 0; i < resultCount; i++) {
+            recentOrderIds[i] = total - 1 - i;
+        }
+        
+        return recentOrderIds;
+    }
     
     function getUserBreakPurchases(address user) external view returns (uint256[] memory) {
         return userBreakPurchases[user];

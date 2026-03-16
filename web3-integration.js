@@ -533,6 +533,213 @@ async function getUserStakes() {
 }
 
 /**
+ * ==================== ORDER TRACKING FUNCTIONS ====================
+ */
+
+/**
+ * Get order details by ID
+ */
+async function getOrder(orderId) {
+    if (!contracts.protocol) return null;
+    
+    try {
+        const order = await contracts.protocol.getOrder(orderId);
+        const breakType = await contracts.protocol.breakTypes(order.breakId);
+        
+        return {
+            orderId: order.id.toNumber(),
+            buyer: order.buyer,
+            buyerLast5: order.buyer.slice(-5),
+            breakId: order.breakId.toNumber(),
+            breakName: breakType.name,
+            quantity: order.quantity.toNumber(),
+            totalPaid: parseFloat(ethers.utils.formatEther(order.totalPaid)),
+            timestamp: new Date(order.timestamp.toNumber() * 1000),
+            fulfilled: order.fulfilled
+        };
+    } catch (error) {
+        console.error('Error getting order:', error);
+        return null;
+    }
+}
+
+/**
+ * Get recent orders for dashboard analytics
+ */
+async function getRecentOrders(count = 10) {
+    if (!contracts.protocol) return [];
+    
+    try {
+        const orderIds = await contracts.protocol.getRecentOrders(count);
+        const orders = [];
+        
+        for (const id of orderIds) {
+            const order = await getOrder(id);
+            if (order) orders.push(order);
+        }
+        
+        return orders;
+    } catch (error) {
+        console.error('Error getting recent orders:', error);
+        return [];
+    }
+}
+
+/**
+ * Get user's orders
+ */
+async function getUserOrders() {
+    if (!userAddress || !contracts.protocol) return [];
+    
+    try {
+        const orderIds = await contracts.protocol.getUserOrders(userAddress);
+        const orders = [];
+        
+        for (const id of orderIds) {
+            const order = await getOrder(id);
+            if (order) orders.push(order);
+        }
+        
+        return orders.reverse(); // Most recent first
+    } catch (error) {
+        console.error('Error getting user orders:', error);
+        return [];
+    }
+}
+
+/**
+ * Get total order count
+ */
+async function getTotalOrders() {
+    if (!contracts.protocol) return 0;
+    
+    try {
+        const count = await contracts.protocol.orderCount();
+        return count.toNumber();
+    } catch (error) {
+        console.error('Error getting total orders:', error);
+        return 0;
+    }
+}
+
+/**
+ * ==================== PRE-SALE FUNCTIONS ====================
+ */
+
+/**
+ * Get pre-sale details by ID
+ */
+async function getPreSale(preSaleId) {
+    if (!contracts.protocol) return null;
+    
+    try {
+        const sale = await contracts.protocol.getPreSale(preSaleId);
+        const totalPacks = sale.packsAvailable.toNumber();
+        const soldPacks = sale.packsSold.toNumber();
+        
+        return {
+            preSaleId: preSaleId,
+            name: sale.name,
+            productType: sale.productType,
+            packsAvailable: totalPacks,
+            packsSold: soldPacks,
+            packsRemaining: totalPacks - soldPacks,
+            packPrice: parseFloat(ethers.utils.formatEther(sale.packPrice)),
+            targetInventoryCost: parseFloat(ethers.utils.formatEther(sale.targetInventoryCost)),
+            fundsRaised: parseFloat(ethers.utils.formatEther(sale.fundsRaised)),
+            paymentToken: sale.paymentToken,
+            openDate: new Date(sale.openDate.toNumber() * 1000),
+            inventoryAcquired: sale.inventoryAcquired,
+            isLive: sale.isLive,
+            cancelled: sale.cancelled,
+            percentSold: totalPacks > 0 ? Math.round((soldPacks / totalPacks) * 100) : 0
+        };
+    } catch (error) {
+        console.error('Error getting pre-sale:', error);
+        return null;
+    }
+}
+
+/**
+ * Get all active pre-sales
+ */
+async function getActivePreSales() {
+    if (!contracts.protocol) return [];
+    
+    try {
+        // Get preSaleCount from contract
+        const count = await contracts.protocol.preSaleCount();
+        const preSales = [];
+        
+        for (let i = 1; i <= count.toNumber(); i++) {
+            const sale = await getPreSale(i);
+            if (sale && !sale.isLive && !sale.cancelled && sale.packsRemaining > 0) {
+                preSales.push(sale);
+            }
+        }
+        
+        return preSales;
+    } catch (error) {
+        console.error('Error getting active pre-sales:', error);
+        return [];
+    }
+}
+
+/**
+ * Purchase packs in a pre-sale
+ */
+async function purchasePreSale(preSaleId, quantity, paymentToken) {
+    if (!userAddress || !contracts.protocol) {
+        return { success: false, error: 'Not connected' };
+    }
+    
+    try {
+        // First approve tokens
+        const sale = await getPreSale(preSaleId);
+        const totalCost = ethers.utils.parseEther((sale.packPrice * quantity).toString());
+        
+        const tokenContract = new ethers.Contract(
+            paymentToken,
+            ['function approve(address spender, uint256 amount) public returns (bool)'],
+            signer
+        );
+        
+        const approveTx = await tokenContract.approve(contracts.protocol.address, totalCost);
+        await approveTx.wait();
+        
+        // Purchase pre-sale
+        const tx = await contracts.protocol.purchasePreSale(preSaleId, quantity);
+        const receipt = await tx.wait();
+        
+        return {
+            success: true,
+            transactionHash: receipt.transactionHash,
+            preSaleId,
+            quantity,
+            totalCost: sale.packPrice * quantity
+        };
+    } catch (error) {
+        console.error('Error purchasing pre-sale:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+/**
+ * Get user's pre-sale purchase amount
+ */
+async function getUserPreSalePurchase(preSaleId) {
+    if (!userAddress || !contracts.protocol) return 0;
+    
+    try {
+        const amount = await contracts.protocol.getUserPreSalePurchase(preSaleId, userAddress);
+        return amount.toNumber();
+    } catch (error) {
+        console.error('Error getting user pre-sale purchase:', error);
+        return 0;
+    }
+}
+
+/**
  * ==================== MARKETPLACE FUNCTIONS ====================
  */
 
@@ -968,6 +1175,14 @@ window.TCGWeb3 = {
     getPendingRewards,
     getUserStakes,
     getBreakTypes,
+    getOrder,
+    getRecentOrders,
+    getUserOrders,
+    getTotalOrders,
+    getPreSale,
+    getActivePreSales,
+    purchasePreSale,
+    getUserPreSalePurchase,
     purchaseBreakPacks,
     purchaseBreakPacksWithEVAULT,
     purchaseShares,
@@ -976,7 +1191,6 @@ window.TCGWeb3 = {
     proposeBuyout,
     voteOnBuyout,
     claimBuyoutPayout,
-    purchasePreSale,
     claimPreSaleRefund,
     formatNumber,
     checkNetwork,

@@ -369,30 +369,43 @@
                         Recent Breaks
                         <a href="breaks.html" class="view-all">View All →</a>
                     </div>
-                    <ul class="activity-list">
+                    <ul class="activity-list" id="recent-breaks-list">
                         <li class="activity-item">
                             <div class="activity-icon">📦</div>
                             <div class="activity-details">
-                                <div class="activity-title">Pokemon Scarlet & Violet Booster Box Break</div>
-                                <div class="activity-time">Purchased 3 spots • 2 days ago</div>
+                                <div class="activity-title">Loading recent breaks...</div>
+                                <div class="activity-time">Connect wallet to view</div>
                             </div>
-                            <div class="activity-amount">£36.00</div>
                         </li>
+                    </ul>
+                </div>
+                
+                <div class="dashboard-section" id="orders">
+                    <div class="section-title">
+                        📊 Live Order Analytics
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">(Last 5 digits of wallet shown)</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                        <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--accent-yellow);" id="total-orders">--</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">Total Orders</div>
+                        </div>
+                        <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--success);" id="today-orders">--</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">Today's Orders</div>
+                        </div>
+                        <div style="background: var(--bg-secondary); padding: 1rem; border-radius: 12px; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--accent-blue);" id="total-revenue">--</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">Total Revenue</div>
+                        </div>
+                    </div>
+                    <ul class="activity-list" id="orders-list">
                         <li class="activity-item">
-                            <div class="activity-icon">🎴</div>
+                            <div class="activity-icon">�</div>
                             <div class="activity-details">
-                                <div class="activity-title">Magic: The Gathering Lord of the Rings</div>
-                                <div class="activity-time">Purchased 2 spots • 5 days ago</div>
+                                <div class="activity-title">Loading orders...</div>
+                                <div class="activity-time">Connect wallet to view live orders</div>
                             </div>
-                            <div class="activity-amount">£25.00</div>
-                        </li>
-                        <li class="activity-item">
-                            <div class="activity-icon">📦</div>
-                            <div class="activity-details">
-                                <div class="activity-title">Yu-Gi-Oh! 25th Anniversary Collection</div>
-                                <div class="activity-time">Purchased 1 spot • 1 week ago</div>
-                            </div>
-                            <div class="activity-amount">£15.00</div>
                         </li>
                     </ul>
                 </div>
@@ -580,6 +593,85 @@
                     document.getElementById('stake-tier').textContent = 'Not Staked';
                 }
             } catch (e) { console.error('Stake info error:', e); }
+            
+            // Load Order Analytics
+            await loadOrderAnalytics();
+        }
+        
+        async function loadOrderAnalytics() {
+            if (!window.TCGWeb3 || !window.TCGWeb3.isConnected) return;
+            
+            const web3 = window.TCGWeb3;
+            
+            try {
+                // Get total orders count
+                const totalOrders = await web3.getTotalOrders();
+                document.getElementById('total-orders').textContent = totalOrders;
+                
+                // Get recent orders
+                const recentOrders = await web3.getRecentOrders(10);
+                
+                // Calculate today's orders and revenue
+                const now = new Date();
+                const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                let todayCount = 0;
+                let totalRevenue = 0;
+                
+                recentOrders.forEach(order => {
+                    totalRevenue += order.totalPaid;
+                    if (order.timestamp >= todayStart) {
+                        todayCount++;
+                    }
+                });
+                
+                document.getElementById('today-orders').textContent = todayCount;
+                document.getElementById('total-revenue').textContent = '£' + totalRevenue.toFixed(2);
+                
+                // Render orders list with last 5 digits of wallet
+                const ordersList = document.getElementById('orders-list');
+                if (recentOrders.length > 0) {
+                    ordersList.innerHTML = recentOrders.map(order => {
+                        const timeAgo = getTimeAgo(order.timestamp);
+                        const walletLast5 = order.buyerLast5 || '*****';
+                        return `
+                            <li class="activity-item">
+                                <div class="activity-icon">📋</div>
+                                <div class="activity-details">
+                                    <div class="activity-title">Order #${order.orderId} - ${order.breakName || 'Pack Break'}</div>
+                                    <div class="activity-time">Wallet: ...${walletLast5} • ${order.quantity} packs • ${timeAgo}</div>
+                                </div>
+                                <div class="activity-amount">£${order.totalPaid.toFixed(2)}</div>
+                            </li>
+                        `;
+                    }).join('');
+                } else {
+                    ordersList.innerHTML = `
+                        <li class="activity-item">
+                            <div class="activity-icon">📋</div>
+                            <div class="activity-details">
+                                <div class="activity-title">No orders yet</div>
+                                <div class="activity-time">Be the first to place an order!</div>
+                            </div>
+                        </li>
+                    `;
+                }
+            } catch (e) {
+                console.error('Order analytics error:', e);
+            }
+        }
+        
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+            
+            if (diffMins < 1) return 'just now';
+            if (diffMins < 60) return `${diffMins}m ago`;
+            if (diffHours < 24) return `${diffHours}h ago`;
+            if (diffDays < 7) return `${diffDays}d ago`;
+            return date.toLocaleDateString();
         }
         
         async function stakeVAULT() {

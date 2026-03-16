@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pre-Sales - TCG Vault</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script src="abi.js"></script>
+    <script src="web3-integration.js"></script>
+    <style>
+        .presale-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .presale-hero {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+            border-radius: 16px;
+            margin-bottom: 2rem;
+        }
+        
+        .presale-hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .presale-hero p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+        
+        .presale-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .presale-card {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        
+        .presale-card:hover {
+            border-color: var(--accent-yellow);
+            transform: translateY(-4px);
+        }
+        
+        .presale-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent-yellow), var(--accent-orange));
+            color: var(--bg-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .presale-badge.sold-out {
+            background: var(--danger);
+        }
+        
+        .presale-badge.ending {
+            background: var(--accent-purple);
+        }
+        
+        .presale-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .presale-type {
+            color: var(--accent-yellow);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .presale-price {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--success);
+            margin-bottom: 0.5rem;
+        }
+        
+        .presale-price .original {
+            text-decoration: line-through;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            margin-left: 0.5rem;
+        }
+        
+        .presale-progress {
+            margin: 1.5rem 0;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-yellow), var(--success));
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        
+        .presale-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+        }
+        
+        .info-item {
+            text-align: center;
+        }
+        
+        .info-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+        
+        .info-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .countdown {
+            text-align: center;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .countdown-label {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+        
+        .countdown-time {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .presale-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .presale-actions button {
+            flex: 1;
+        }
+        
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .quantity-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .quantity-btn:hover {
+            border-color: var(--accent-yellow);
+            background: var(--accent-yellow);
+            color: var(--bg-primary);
+        }
+        
+        .quantity-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            min-width: 40px;
+            text-align: center;
+        }
+        
+        .my-purchases {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .my-purchases h2 {
+            margin-bottom: 1.5rem;
+        }
+        
+        .purchase-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+        }
+        
+        .purchase-info h4 {
+            margin-bottom: 0.25rem;
+        }
+        
+        .purchase-info span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        
+        .purchase-status {
+            text-align: right;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background: var(--success);
+            color: white;
+        }
+        
+        .status-refunded {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .status-fulfilled {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .presale-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .presale-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">🎴 TCG Vault</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="marketplace.html">Marketplace</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="presale.html" class="active">Pre-Sales</a></li>
+                <li><a href="breaks.html">Breaks</a></li>
+            </ul>
+            <button class="connect-wallet-btn" id="connectBtn">
+                <span>Connect Wallet</span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="presale-container">
+        <div class="presale-hero">
+            <h1>🔥 Exclusive Pre-Sales</h1>
+            <p>Secure your packs early and save! Pre-sale spots are limited and sell out fast.</p>
+        </div>
+
+        <div class="presale-grid" id="presale-grid">
+            <!-- Pre-sales will be loaded dynamically -->
+            <div class="presale-card">
+                <div class="presale-badge">Coming Soon</div>
+                <h3 class="presale-title">Loading Pre-Sales...</h3>
+                <p style="color: var(--text-muted);">Connect your wallet to view available pre-sales</p>
+            </div>
+        </div>
+
+        <div class="my-purchases" id="my-purchases" style="display: none;">
+            <h2>📦 My Pre-Sale Purchases</h2>
+            <div id="purchases-list">
+                <!-- Purchases loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Purchase Modal -->
+    <div class="modal" id="purchaseModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Purchase Pre-Sale Packs</h3>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="modal-presale-info"></div>
+                <div class="quantity-selector">
+                    <button class="quantity-btn" id="decreaseQty">−</button>
+                    <span class="quantity-value" id="quantity">1</span>
+                    <button class="quantity-btn" id="increaseQty">+</button>
+                </div>
+                <div style="text-align: center; margin: 1rem 0;">
+                    <p>Total: <strong id="total-price">£0.00</strong></p>
+                </div>
+                <div class="form-group">
+                    <label>Payment Token</label>
+                    <select id="payment-token" class="form-control">
+                        <option value="usdc">USDC</option>
+                        <option value="usdt">USDT</option>
+                        <option value="evault">eVAULT (5% discount)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelPurchase">Cancel</button>
+                <button class="btn btn-primary" id="confirmPurchase">Purchase Now</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPreSale = null;
+        let currentQuantity = 1;
+        let preSales = [];
+
+        async function loadPreSales() {
+            const web3 = window.TCGWeb3;
+            if (!web3 || !web3.isConnected) {
+                document.getElementById('presale-grid').innerHTML = `
+                    <div class="presale-card" style="text-align: center; grid-column: 1 / -1;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🔒</div>
+                        <h3>Connect Your Wallet</h3>
+                        <p style="color: var(--text-muted); margin: 1rem 0;">
+                            Connect your wallet to view exclusive pre-sales and purchase packs early.
+                        </p>
+                        <button class="btn btn-primary" onclick="connectWallet()">Connect Wallet</button>
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                preSales = await web3.getActivePreSales();
+                
+                if (preSales.length === 0) {
+                    // Show demo pre-sales if none active
+                    renderDemoPreSales();
+                } else {
+                    renderPreSales(preSales);
+                }
+
+                loadMyPurchases();
+            } catch (error) {
+                console.error('Error loading pre-sales:', error);
+                renderDemoPreSales();
+            }
+        }
+
+        function renderDemoPreSales() {
+            const demoPreSales = [
+                {
+                    preSaleId: 1,
+                    name: "Ascended Heroes",
+                    productType: "Booster Box Break",
+                    packsAvailable: 50,
+                    packsRemaining: 23,
+                    packPrice: 50,
+                    percentSold: 54,
+                    openDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+                    isDemo: true
+                },
+                {
+                    preSaleId: 2,
+                    name: "Pokémon 151",
+                    productType: "Elite Trainer Box Break",
+                    packsAvailable: 100,
+                    packsRemaining: 67,
+                    packPrice: 55,
+                    percentSold: 33,
+                    openDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+                    isDemo: true
+                }
+            ];
+            renderPreSales(demoPreSales);
+        }
+
+        function renderPreSales(preSalesList) {
+            const grid = document.getElementById('presale-grid');
+            
+            grid.innerHTML = preSalesList.map(sale => {
+                const daysLeft = Math.ceil((sale.openDate - new Date()) / (1000 * 60 * 60 * 24));
+                const isLowStock = sale.packsRemaining < 10;
+                const isEndingSoon = daysLeft <= 2;
+                
+                let badge = '<div class="presale-badge">Pre-Sale Active</div>';
+                if (sale.packsRemaining === 0) {
+                    badge = '<div class="presale-badge sold-out">Sold Out</div>';
+                } else if (isEndingSoon) {
+                    badge = '<div class="presale-badge ending">Ending Soon</div>';
+                }
+
+                return `
+                    <div class="presale-card">
+                        ${badge}
+                        <h3 class="presale-title">${sale.name}</h3>
+                        <p class="presale-type">${sale.productType}</p>
+                        
+                        <div class="presale-price">
+                            £${sale.packPrice.toFixed(2)}
+                            <span class="original">£${(sale.packPrice * 1.2).toFixed(2)}</span>
+                        </div>
+                        <p style="color: var(--success); font-size: 0.9rem; margin-bottom: 1rem;">
+                            ✓ Save 20% with pre-sale pricing
+                        </p>
+                        
+                        ${sale.packsRemaining > 0 ? `
+                            <div class="countdown">
+                                <div class="countdown-label">Pre-sale ends in</div>
+                                <div class="countdown-time">${daysLeft} days</div>
+                            </div>
+                        ` : ''}
+                        
+                        <div class="presale-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${sale.percentSold}%"></div>
+                            </div>
+                            <div class="progress-text">
+                                <span>${sale.percentSold}% sold</span>
+                                <span>${sale.packsRemaining} packs left</span>
+                            </div>
+                        </div>
+                        
+                        <div class="presale-info">
+                            <div class="info-item">
+                                <div class="info-label">Total Packs</div>
+                                <div class="info-value">${sale.packsAvailable}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Price per Pack</div>
+                                <div class="info-value">£${sale.packPrice.toFixed(2)}</div>
+                            </div>
+                        </div>
+                        
+                        ${sale.packsRemaining > 0 ? `
+                            <div class="presale-actions">
+                                <button class="btn btn-secondary" onclick="showPreSaleDetails(${sale.preSaleId})">
+                                    Details
+                                </button>
+                                <button class="btn btn-primary" onclick="openPurchaseModal(${sale.preSaleId})">
+                                    Buy Now
+                                </button>
+                            </div>
+                        ` : `
+                            <button class="btn btn-secondary" style="width: 100%;" disabled>
+                                Sold Out
+                            </button>
+                        `}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openPurchaseModal(preSaleId) {
+            currentPreSale = preSales.find(s => s.preSaleId === preSaleId) || 
+                           { preSaleId, packPrice: 50, name: "Ascended Heroes", packsRemaining: 23 };
+            currentQuantity = 1;
+            
+            document.getElementById('modal-presale-info').innerHTML = `
+                <h4 style="margin-bottom: 1rem;">${currentPreSale.name}</h4>
+                <p style="color: var(--text-muted); margin-bottom: 1rem;">
+                    Price: £${currentPreSale.packPrice.toFixed(2)} per pack
+                </p>
+            `;
+            
+            updateQuantityDisplay();
+            document.getElementById('purchaseModal').style.display = 'flex';
+        }
+
+        function updateQuantityDisplay() {
+            document.getElementById('quantity').textContent = currentQuantity;
+            const total = currentQuantity * (currentPreSale?.packPrice || 50);
+            document.getElementById('total-price').textContent = `£${total.toFixed(2)}`;
+        }
+
+        async function loadMyPurchases() {
+            const web3 = window.TCGWeb3;
+            if (!web3 || !web3.isConnected) return;
+            
+            const container = document.getElementById('my-purchases');
+            const list = document.getElementById('purchases-list');
+            
+            try {
+                // This would load actual purchases from the contract
+                // For now, showing empty state
+                list.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">📭</div>
+                        <p>No pre-sale purchases yet</p>
+                    </div>
+                `;
+                container.style.display = 'block';
+            } catch (error) {
+                console.error('Error loading purchases:', error);
+            }
+        }
+
+        // Event listeners
+        document.getElementById('closeModal').addEventListener('click', () => {
+            document.getElementById('purchaseModal').style.display = 'none';
+        });
+
+        document.getElementById('cancelPurchase').addEventListener('click', () => {
+            document.getElementById('purchaseModal').style.display = 'none';
+        });
+
+        document.getElementById('decreaseQty').addEventListener('click', () => {
+            if (currentQuantity > 1) {
+                currentQuantity--;
+                updateQuantityDisplay();
+            }
+        });
+
+        document.getElementById('increaseQty').addEventListener('click', () => {
+            if (currentQuantity < (currentPreSale?.packsRemaining || 10)) {
+                currentQuantity++;
+                updateQuantityDisplay();
+            }
+        });
+
+        document.getElementById('confirmPurchase').addEventListener('click', async () => {
+            const web3 = window.TCGWeb3;
+            if (!web3 || !currentPreSale) return;
+            
+            const btn = document.getElementById('confirmPurchase');
+            btn.textContent = 'Processing...';
+            btn.disabled = true;
+            
+            try {
+                const token = document.getElementById('payment-token').value;
+                const tokenAddresses = {
+                    'usdc': deployedAddresses.usdc,
+                    'usdt': deployedAddresses.usdt,
+                    'evault': deployedAddresses.eVAULT
+                };
+                
+                const result = await web3.purchasePreSale(
+                    currentPreSale.preSaleId,
+                    currentQuantity,
+                    tokenAddresses[token]
+                );
+                
+                if (result.success) {
+                    alert(`Successfully purchased ${currentQuantity} packs!`);
+                    document.getElementById('purchaseModal').style.display = 'none';
+                    loadPreSales();
+                } else {
+                    alert('Purchase failed: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Purchase error:', error);
+                alert('Error processing purchase. Please try again.');
+            } finally {
+                btn.textContent = 'Purchase Now';
+                btn.disabled = false;
+            }
+        });
+
+        document.getElementById('connectBtn').addEventListener('click', async () => {
+            const web3 = window.TCGWeb3;
+            if (web3) {
+                await web3.connectWallet();
+                loadPreSales();
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPreSales();
+            
+            // Check if already connected
+            const web3 = window.TCGWeb3;
+            if (web3 && web3.isConnected) {
+                document.getElementById('connectBtn').innerHTML = `
+                    <span>${web3.userAddress.slice(0, 6)}...${web3.userAddress.slice(-4)}</span>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
