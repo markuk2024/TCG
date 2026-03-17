@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pack Breaks - TCG Vault</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script src="abi.js"></script>
+    <script src="web3-integration.js"></script>
+    <style>
+        .packs-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .packs-hero {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+            border-radius: 16px;
+            margin-bottom: 2rem;
+        }
+        
+        .packs-hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .packs-hero p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+        
+        .exchange-rate {
+            display: inline-block;
+            background: var(--accent-yellow);
+            color: var(--bg-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+        
+        .packs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .pack-card {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .pack-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-yellow), var(--accent-orange));
+        }
+        
+        .pack-card:hover {
+            border-color: var(--accent-yellow);
+            transform: translateY(-4px);
+        }
+        
+        .pack-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .pack-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .pack-series {
+            color: var(--accent-yellow);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .price-section {
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .price-row:last-child {
+            margin-bottom: 0;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .price-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .price-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .price-value.gbp {
+            color: var(--text-primary);
+        }
+        
+        .price-value.usd {
+            color: var(--accent-blue);
+            font-size: 0.95rem;
+        }
+        
+        .profit-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--success);
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        
+        .profit-label {
+            font-size: 0.9rem;
+        }
+        
+        .profit-value {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        
+        .distribution-preview {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .distribution-title {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+        
+        .distribution-bars {
+            display: flex;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+        
+        .bar-cost {
+            background: var(--accent-blue);
+        }
+        
+        .bar-profit {
+            background: var(--success);
+        }
+        
+        .bar-treasury {
+            background: var(--accent-yellow);
+        }
+        
+        .distribution-legend {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.8rem;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        
+        .buy-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--accent-yellow), var(--accent-orange));
+            color: var(--bg-primary);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+        
+        .buy-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(251, 192, 45, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .packs-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">🎴 TCG Vault</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="marketplace.html">Marketplace</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="pack-breaks.html" class="active">Pack Breaks</a></li>
+                <li><a href="transparency.html">Transparency</a></li>
+            </ul>
+            <button class="connect-wallet-btn" id="connectBtn">
+                <span>Connect Wallet</span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="packs-container">
+        <div class="packs-hero">
+            <h1>🎴 Pack Breaks</h1>
+            <p>Join live pack breaks with transparent pricing. See exactly where your money goes.</p>
+            <div class="exchange-rate">💱 Exchange Rate: £1 = $1.27 USD</div>
+        </div>
+
+        <div class="packs-grid" id="packs-grid">
+            <!-- Pack cards will be generated by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // GBP to USD conversion rate
+        const GBP_TO_USD = 1.27;
+        
+        // Pack break data
+        const packBreaks = [
+            {
+                id: 1,
+                name: "Ascended Heroes",
+                icon: "⚡",
+                series: "Special Expansion",
+                costGbp: 10,
+                saleGbp: 12.50,
+                distribution: { cost: 80, profit: 20 }
+            },
+            {
+                id: 2,
+                name: "Surging Sparks",
+                icon: "🔥",
+                series: "Scarlet & Violet",
+                costGbp: 7,
+                saleGbp: 10,
+                distribution: { cost: 70, profit: 30 }
+            },
+            {
+                id: 3,
+                name: "151",
+                icon: "⭐",
+                series: "Special Collection",
+                costGbp: 25,
+                saleGbp: 32,
+                distribution: { cost: 78, profit: 22 }
+            },
+            {
+                id: 4,
+                name: "Destined Rivals",
+                icon: "⚔️",
+                series: "Scarlet & Violet",
+                costGbp: 13,
+                saleGbp: 16,
+                distribution: { cost: 81, profit: 19 }
+            },
+            {
+                id: 5,
+                name: "Prismatic Evolutions",
+                icon: "💎",
+                series: "Special Expansion",
+                costGbp: 12,
+                saleGbp: 15,
+                distribution: { cost: 80, profit: 20 }
+            },
+            {
+                id: 6,
+                name: "Journey Together",
+                icon: "🤝",
+                series: "Scarlet & Violet",
+                costGbp: 6,
+                saleGbp: 10,
+                distribution: { cost: 60, profit: 40 }
+            }
+        ];
+
+        function formatCurrency(gbp) {
+            const usd = gbp * GBP_TO_USD;
+            return {
+                gbp: `£${gbp.toFixed(2)}`,
+                usd: `$${usd.toFixed(2)}`
+            };
+        }
+
+        function renderPackCards() {
+            const grid = document.getElementById('packs-grid');
+            
+            grid.innerHTML = packBreaks.map(pack => {
+                const cost = formatCurrency(pack.costGbp);
+                const sale = formatCurrency(pack.saleGbp);
+                const profit = pack.saleGbp - pack.costGbp;
+                const profitPercent = ((profit / pack.saleGbp) * 100).toFixed(0);
+                const profitUsd = profit * GBP_TO_USD;
+                
+                return `
+                    <div class="pack-card">
+                        <div class="pack-icon">${pack.icon}</div>
+                        <h3 class="pack-name">${pack.name}</h3>
+                        <p class="pack-series">${pack.series}</p>
+                        
+                        <div class="price-section">
+                            <div class="price-row">
+                                <span class="price-label">Pack Cost (Our Cost)</span>
+                                <div>
+                                    <div class="price-value gbp">${cost.gbp}</div>
+                                    <div class="price-value usd">≈ ${cost.usd}</div>
+                                </div>
+                            </div>
+                            <div class="price-row">
+                                <span class="price-label">Sale Price (You Pay)</span>
+                                <div>
+                                    <div class="price-value gbp">${sale.gbp}</div>
+                                    <div class="price-value usd">≈ ${sale.usd}</div>
+                                </div>
+                            </div>
+                            <div class="profit-row">
+                                <span class="profit-label">Platform Profit per Pack</span>
+                                <span class="profit-value">+£${profit.toFixed(2)} (${profitPercent}%)</span>
+                            </div>
+                        </div>
+                        
+                        <div class="distribution-preview">
+                            <div class="distribution-title">Money Distribution per Pack</div>
+                            <div class="distribution-bars">
+                                <div class="bar-cost" style="width: ${pack.distribution.cost}%"></div>
+                                <div class="bar-profit" style="width: ${pack.distribution.profit}%"></div>
+                            </div>
+                            <div class="distribution-legend">
+                                <div class="legend-item">
+                                    <div class="legend-dot" style="background: var(--accent-blue)"></div>
+                                    <span>${pack.distribution.cost}% Pack Cost</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-dot" style="background: var(--success)"></div>
+                                    <span>${pack.distribution.profit}% Platform Profit</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="buy-btn" onclick="buyPack(${pack.id})">
+                            Buy Pack Slot - ${sale.gbp}
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function buyPack(packId) {
+            const web3 = window.TCGWeb3;
+            if (!web3 || !web3.isConnected) {
+                alert('Please connect your wallet first');
+                return;
+            }
+            
+            const pack = packBreaks.find(p => p.id === packId);
+            if (!pack) return;
+            
+            // Navigate to breaks page or show purchase modal
+            window.location.href = `breaks.html?pack=${packId}`;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderPackCards();
+            
+            // Connect wallet button
+            document.getElementById('connectBtn').addEventListener('click', async () => {
+                const web3 = window.TCGWeb3;
+                if (web3) {
+                    await web3.connectWallet();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
