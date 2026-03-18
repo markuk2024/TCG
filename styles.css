@@ -1132,6 +1132,64 @@ footer {
     font-size: 0.85rem;
 }
 
+/* Pre-Sale Popup Modal */
+.presale-popup-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.presale-popup-modal.active {
+    display: flex;
+}
+
+.payment-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(4px);
+}
+
+.payment-modal-content {
+    position: relative;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    width: 90%;
+    max-width: 380px;
+    max-height: 90vh;
+    overflow-y: auto;
+    z-index: 2001;
+    margin: auto;
+}
+
+.payment-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.payment-modal-header h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.payment-modal-body {
+    padding: 1.5rem;
+}
+
 /* Wallet Modal */
 .wallet-modal {
     position: fixed;
