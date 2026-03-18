@@ -1136,11 +1136,13 @@ function closePresalePopup() {
 }
 
 // Show pre-sale popup after 3 seconds on breaks page
-if (window.location.pathname.includes('breaks.html')) {
-    setTimeout(() => {
-        showPresalePopup();
-    }, 3000);
-}
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.location.pathname.includes('breaks.html')) {
+        setTimeout(() => {
+            showPresalePopup();
+        }, 3000);
+    }
+});
 
 window.showPresalePopup = showPresalePopup;
 window.closePresalePopup = closePresalePopup;
