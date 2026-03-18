@@ -446,6 +446,23 @@ function adjustQuantity(change) {
     document.getElementById('qtyTotal').textContent = total;
 }
 
+function addToCart(name, price, type = 'presale') {
+    const id = name.toLowerCase().replace(/\s+/g, '-');
+    const icon = '🎴';
+    
+    const existingItem = CartState.items.find(item => item.id === id);
+    if (existingItem) {
+        existingItem.quantity += 1;
+    } else {
+        CartState.items.push({ id, name, price, icon, quantity: 1, type });
+    }
+    
+    saveCart();
+    updateCartCount();
+    
+    showCartNotification(`${name} added to cart - £${price.toFixed(2)}`);
+}
+
 function addToCartFromModal(id, name, price, icon) {
     const qty = parseInt(document.getElementById('qtyInput').value);
     
@@ -568,6 +585,7 @@ function clearCart() {
 
 // Make cart functions globally available
 window.CartState = CartState;
+window.addToCart = addToCart;
 window.showQuantityModal = showQuantityModal;
 window.closeQuantityModal = closeQuantityModal;
 window.adjustQuantity = adjustQuantity;
