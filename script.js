@@ -1135,14 +1135,6 @@ function closePresalePopup() {
     }
 }
 
-// Show pre-sale popup after 3 seconds on breaks page
-document.addEventListener('DOMContentLoaded', function() {
-    if (window.location.pathname.includes('breaks.html')) {
-        setTimeout(() => {
-            showPresalePopup();
-        }, 3000);
-    }
-});
-
+// Make functions globally available
 window.showPresalePopup = showPresalePopup;
 window.closePresalePopup = closePresalePopup;
