@@ -1115,3 +1115,32 @@ function showNotification(message, type = 'info') {
 window.showBuyoutModal = showBuyoutModal;
 window.closeBuyoutModal = closeBuyoutModal;
 window.voteOnBuyout = voteOnBuyout;
+
+// Pre-Sale Popup Functions
+function showPresalePopup() {
+    const modal = document.getElementById('presalePopupModal');
+    if (modal) {
+        modal.classList.add('active');
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closePresalePopup() {
+    const modal = document.getElementById('presalePopupModal');
+    if (modal) {
+        modal.classList.remove('active');
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+}
+
+// Show pre-sale popup after 3 seconds on breaks page
+if (window.location.pathname.includes('breaks.html')) {
+    setTimeout(() => {
+        showPresalePopup();
+    }, 3000);
+}
+
+window.showPresalePopup = showPresalePopup;
+window.closePresalePopup = closePresalePopup;
