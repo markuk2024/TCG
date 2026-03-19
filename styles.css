@@ -1462,11 +1462,13 @@ footer {
     align-items: center;
     justify-content: center;
     opacity: 0;
+    pointer-events: none;
     transition: opacity 0.3s;
 }
 
 .cart-modal.active {
     opacity: 1;
+    pointer-events: auto;
 }
 
 .cart-modal-overlay {
