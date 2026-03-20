@@ -1093,7 +1093,12 @@ function showNotification(message, type = 'info') {
  * Get token balance (USDC, USDT, VAULT, eVAULT)
  */
 async function getTokenBalance(tokenSymbol, address) {
-    if (!provider) return '0';
+    console.log('getTokenBalance called:', { tokenSymbol, address, providerExists: !!provider });
+    
+    if (!provider) {
+        console.error('Provider not initialized');
+        return '0';
+    }
     
     try {
         let tokenAddress;
@@ -1116,16 +1121,29 @@ async function getTokenBalance(tokenSymbol, address) {
                 throw new Error('Unknown token: ' + tokenSymbol);
         }
         
+        console.log('Token address:', tokenAddress);
+        console.log('Querying address:', address || userAddress);
+        
         // Create contract instance
         const tokenContract = new ethers.Contract(tokenAddress, ABIs.ERC20, provider);
+        console.log('Contract instance created');
         
         // Get balance
         const balance = await tokenContract.balanceOf(address || userAddress);
+        console.log('Balance (raw):', balance.toString());
         
         // Format balance (assuming 18 decimals)
-        return ethers.utils.formatEther(balance);
+        const formatted = ethers.utils.formatEther(balance);
+        console.log('Balance (formatted):', formatted);
+        
+        return formatted;
     } catch (error) {
-        console.error(`Error getting ${tokenSymbol} balance:`, error);
+        console.error(`❌ Error getting ${tokenSymbol} balance:`, error);
+        console.error('Error details:', {
+            message: error.message,
+            code: error.code,
+            stack: error.stack
+        });
         return '0';
     }
 }
