@@ -214,9 +214,54 @@ async function connectWallet() {
         // Request account access
         await provider.send("eth_requestAccounts", []);
         
+        // Check and switch to BSC Testnet
+        const network = await provider.getNetwork();
+        const BSC_TESTNET_CHAIN_ID = 97;
+        
+        console.log('Current network:', network.chainId);
+        
+        if (network.chainId !== BSC_TESTNET_CHAIN_ID) {
+            console.log('Wrong network detected, switching to BSC Testnet...');
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: '0x61' }], // BSC Testnet (97 in hex)
+                });
+                console.log('✅ Switched to BSC Testnet');
+                // Reload provider after network switch
+                provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+            } catch (switchError) {
+                // If BSC Testnet is not added, add it
+                if (switchError.code === 4902) {
+                    console.log('BSC Testnet not found, adding network...');
+                    await window.ethereum.request({
+                        method: 'wallet_addEthereumChain',
+                        params: [{
+                            chainId: '0x61',
+                            chainName: 'BSC Testnet',
+                            nativeCurrency: {
+                                name: 'BNB',
+                                symbol: 'tBNB',
+                                decimals: 18
+                            },
+                            rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545/'],
+                            blockExplorerUrls: ['https://testnet.bscscan.com']
+                        }]
+                    });
+                    console.log('✅ BSC Testnet added and switched');
+                    // Reload provider after adding network
+                    provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+                } else {
+                    throw switchError;
+                }
+            }
+        }
+        
         // Get signer
         signer = provider.getSigner();
         userAddress = await signer.getAddress();
+        
+        console.log('Connected address:', userAddress);
         
         // Initialize contracts
         await initContracts();
@@ -230,7 +275,7 @@ async function connectWallet() {
         // Start balance polling
         startBalancePolling();
         
-        showNotification('Wallet connected!', 'success');
+        showNotification('Wallet connected to BSC Testnet!', 'success');
         return true;
     } catch (error) {
         console.error('Connection error:', error);
