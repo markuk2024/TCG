@@ -654,7 +654,7 @@ const TREASURY_WALLETS = {
 
 let currentBreakData = null;
 
-function openBreakPaymentModal(breakName, price, breakId) {
+async function openBreakPaymentModal(breakName, price, breakId) {
     currentBreakData = { name: breakName, price: price, id: breakId };
     BSCState.currentBreak = breakId;
     BSCState.packQuantity = 1;
@@ -668,6 +668,12 @@ function openBreakPaymentModal(breakName, price, breakId) {
     
     // Check wallet connection status and update modal
     updatePaymentModalWalletStatus();
+    
+    // Fetch fresh token balances if wallet is connected
+    if (BSCState.isConnected && BSCState.address) {
+        console.log('Modal opened - fetching fresh token balances...');
+        await fetchTokenBalances();
+    }
     
     // Show modal
     const modal = document.getElementById('breakPaymentModal');
@@ -893,8 +899,20 @@ async function processCryptoPayment() {
         return;
     }
     
+    // Fetch fresh balances before processing payment
+    console.log('Processing payment - fetching fresh balances first...');
+    await fetchTokenBalances();
+    
     const totalAmount = parseFloat(document.getElementById('modalTotalPrice').textContent);
     const selectedBalance = BSCState.selectedToken === 'USDC' ? BSCState.usdcBalance : BSCState.usdtBalance;
+    
+    console.log('Payment check:', {
+        totalAmount,
+        selectedToken: BSCState.selectedToken,
+        selectedBalance,
+        usdcBalance: BSCState.usdcBalance,
+        usdtBalance: BSCState.usdtBalance
+    });
     
     if (selectedBalance < totalAmount) {
         alert(`Insufficient ${BSCState.selectedToken} balance. You have ${selectedBalance.toFixed(2)} ${BSCState.selectedToken} but need ${totalAmount.toFixed(2)}.`);
