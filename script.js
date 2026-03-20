@@ -688,26 +688,16 @@ function updatePaymentCalculations() {
     const packCostBase = quantity * 10.00; // £10 cost per pack
     const profit = totalRevenue - packCostBase;
     
-    // Split profit:
-    // 50% Treasury (eco system support - staking rewards, coin pegging)
-    // 20% Operations Wallet (wages, web services, stock, shipping)
-    // 20% Token Liquidity Vault (building to 25K for token launch)
-    // 10% Investment Vault (pack buyouts, farming, etc)
-    const treasuryShare = profit * 0.50;
-    const operationsShare = profit * 0.20;
-    const tokenLiquidityShare = profit * 0.20;
-    const investmentVaultShare = profit * 0.10;
+    // Update UI - only update elements that exist
+    const modalTotalPrice = document.getElementById('modalTotalPrice');
+    const cryptoPayAmount = document.getElementById('cryptoPayAmount');
+    const costToOpsAmount = document.getElementById('costToOpsAmount');
+    const profitAmount = document.getElementById('profitAmount');
     
-    // Update UI
-    document.getElementById('modalTotalPrice').textContent = totalRevenue.toFixed(2);
-    document.getElementById('cryptoPayAmount').textContent = totalRevenue.toFixed(2);
-    
-    // Show breakdown
-    document.getElementById('costToOpsAmount').textContent = 'Pack Cost to Ops: £' + packCostBase.toFixed(2);
-    document.getElementById('treasuryAmount').textContent = 'Treasury (50%): £' + treasuryShare.toFixed(2);
-    document.getElementById('operationsAmount').textContent = 'Operations (20%): £' + operationsShare.toFixed(2);
-    document.getElementById('tokenLiquidityAmount').textContent = 'Token Liquidity (20%): £' + tokenLiquidityShare.toFixed(2);
-    document.getElementById('investmentAmount').textContent = 'Investment Vault (10%): £' + investmentVaultShare.toFixed(2);
+    if (modalTotalPrice) modalTotalPrice.textContent = totalRevenue.toFixed(2);
+    if (cryptoPayAmount) cryptoPayAmount.textContent = totalRevenue.toFixed(2);
+    if (costToOpsAmount) costToOpsAmount.textContent = packCostBase.toFixed(2);
+    if (profitAmount) profitAmount.textContent = profit.toFixed(2);
 }
 
 function switchPaymentTab(tab) {
