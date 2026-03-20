@@ -807,20 +807,38 @@ async function connectBSCWallet() {
 }
 
 async function fetchTokenBalances() {
-    // In a real implementation, you would call the BSC contracts
-    // For demo purposes, showing mock balances
+    if (!BSCState.address || !window.TCGWeb3) {
+        console.warn('Cannot fetch balances: wallet not connected or Web3 not initialized');
+        return;
+    }
     
-    // This would be replaced with actual contract calls:
-    // const usdcContract = new web3.eth.Contract(ERC20_ABI, BSC_CONTRACTS.USDC);
-    // const usdcBalance = await usdcContract.methods.balanceOf(BSCState.address).call();
-    
-    BSCState.usdcBalance = 150.50; // Mock balance
-    BSCState.usdtBalance = 200.00; // Mock balance
-    
-    document.getElementById('usdcBalance').textContent = BSCState.usdcBalance.toFixed(2);
-    document.getElementById('usdtBalance').textContent = BSCState.usdtBalance.toFixed(2);
-    document.getElementById('walletBalance').textContent = 
-        `USDC: ${BSCState.usdcBalance.toFixed(2)} | USDT: ${BSCState.usdtBalance.toFixed(2)}`;
+    try {
+        // Fetch actual token balances from the blockchain
+        const usdcBalance = await window.TCGWeb3.getTokenBalance('USDC', BSCState.address);
+        const usdtBalance = await window.TCGWeb3.getTokenBalance('USDT', BSCState.address);
+        
+        // Convert from wei to readable format (18 decimals)
+        BSCState.usdcBalance = parseFloat(usdcBalance);
+        BSCState.usdtBalance = parseFloat(usdtBalance);
+        
+        // Update UI elements if they exist
+        const usdcBalanceEl = document.getElementById('usdcBalance');
+        const usdtBalanceEl = document.getElementById('usdtBalance');
+        const walletBalanceEl = document.getElementById('walletBalance');
+        
+        if (usdcBalanceEl) usdcBalanceEl.textContent = BSCState.usdcBalance.toLocaleString();
+        if (usdtBalanceEl) usdtBalanceEl.textContent = BSCState.usdtBalance.toLocaleString();
+        if (walletBalanceEl) {
+            walletBalanceEl.textContent = `USDC: ${BSCState.usdcBalance.toLocaleString()} | USDT: ${BSCState.usdtBalance.toLocaleString()}`;
+        }
+        
+        console.log('Token balances fetched:', { usdc: BSCState.usdcBalance, usdt: BSCState.usdtBalance });
+    } catch (error) {
+        console.error('Error fetching token balances:', error);
+        // Fallback to 0 if fetch fails
+        BSCState.usdcBalance = 0;
+        BSCState.usdtBalance = 0;
+    }
 }
 
 function selectToken(token) {

@@ -1090,6 +1090,47 @@ function showNotification(message, type = 'info') {
 }
 
 /**
+ * Get token balance (USDC, USDT, VAULT, eVAULT)
+ */
+async function getTokenBalance(tokenSymbol, address) {
+    if (!provider) return '0';
+    
+    try {
+        let tokenAddress;
+        
+        // Get token contract address
+        switch(tokenSymbol.toUpperCase()) {
+            case 'USDC':
+                tokenAddress = CONTRACT_ADDRESSES.usdc;
+                break;
+            case 'USDT':
+                tokenAddress = CONTRACT_ADDRESSES.usdt;
+                break;
+            case 'VAULT':
+                tokenAddress = CONTRACT_ADDRESSES.vaultToken;
+                break;
+            case 'EVAULT':
+                tokenAddress = CONTRACT_ADDRESSES.eVAULT;
+                break;
+            default:
+                throw new Error('Unknown token: ' + tokenSymbol);
+        }
+        
+        // Create contract instance
+        const tokenContract = new ethers.Contract(tokenAddress, ABIs.ERC20, provider);
+        
+        // Get balance
+        const balance = await tokenContract.balanceOf(address || userAddress);
+        
+        // Format balance (assuming 18 decimals)
+        return ethers.utils.formatEther(balance);
+    } catch (error) {
+        console.error(`Error getting ${tokenSymbol} balance:`, error);
+        return '0';
+    }
+}
+
+/**
  * Get ETH balance
  */
 async function getEthBalance() {
@@ -1159,6 +1200,7 @@ window.TCGWeb3 = {
     initWeb3,
     connectWallet,
     loadUserBalances,
+    getTokenBalance,
     stakeTokens,
     unstake,
     emergencyUnstake,
@@ -1187,6 +1229,8 @@ window.TCGWeb3 = {
     checkNetwork,
     switchToBSC,
     getEthBalance,
+    getAddress: () => userAddress,
+    isConnected: () => !!userAddress,
     contracts: () => contracts,
     userAddress: () => userAddress,
     userBalances: () => userBalances
