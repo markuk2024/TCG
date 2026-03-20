@@ -8,6 +8,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script src="web3-integration.js"></script>
     <style>
         .checkout-container {
             max-width: 900px;
@@ -374,13 +376,40 @@
             }
         }
         
-        function processPayment() {
+        async function processPayment() {
             if (selectedPayment === 'card') {
                 // Stripe integration would go here
                 alert('Redirecting to Stripe Checkout...');
             } else {
-                // Token wallet transaction
-                alert('Processing token payment from your wallet...');
+                // Token wallet transaction with Web3
+                try {
+                    // Check if Web3 is initialized
+                    if (!window.TCGWeb3) {
+                        alert('Please wait for Web3 to initialize...');
+                        return;
+                    }
+                    
+                    // Connect wallet if not connected
+                    if (!window.TCGWeb3.isConnected()) {
+                        alert('Please connect your wallet first');
+                        await window.TCGWeb3.connectWallet();
+                        return;
+                    }
+                    
+                    alert('Processing payment with VAULT token...\n\nNote: This is a demo. In production, this would process your cart items through the smart contract.');
+                    
+                    // In production, you would:
+                    // 1. Get cart items from localStorage
+                    // 2. Calculate total in VAULT tokens
+                    // 3. Call appropriate contract functions based on item types
+                    // 4. Process each item (breaks, fractions, pre-sales)
+                    
+                    console.log('Payment processing would happen here with cart items');
+                    
+                } catch (error) {
+                    console.error('Payment error:', error);
+                    alert('Payment failed: ' + error.message);
+                }
             }
         }
     </script>

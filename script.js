@@ -849,26 +849,28 @@ async function processCryptoPayment() {
     showPaymentStatus('processing');
     
     try {
-        // In a real implementation:
-        // 1. Create a transaction to send USDC/USDT to a smart contract
-        // 2. The smart contract would automatically distribute funds:
-        //    - 60% to treasury wallet (pack cost)
-        //    - 20% to operations wallet
-        //    - 20% to buyback wallet
-        // 3. The contract emits an event with the break details
+        // Check if Web3 is initialized
+        if (!window.TCGWeb3) {
+            throw new Error('Web3 not initialized. Please refresh the page.');
+        }
         
-        // For demo, simulate transaction
-        await simulateTransaction();
+        // Get break details
+        const breakId = BSCState.currentBreak || 0; // Default to first break type
+        const quantity = BSCState.packQuantity || 1;
+        const paymentToken = BSCState.selectedToken; // 'USDC' or 'USDT'
         
-        // Show success
-        showPaymentStatus('success', '0x' + Math.random().toString(16).substr(2, 40));
+        // Call the smart contract to purchase break packs
+        const txHash = await window.TCGWeb3.purchaseBreakPacks(breakId, quantity, paymentToken);
+        
+        // Show success with actual transaction hash
+        showPaymentStatus('success', txHash);
         
         // Add to user's breaks (would be handled by backend in production)
         addBreakToUserHistory();
         
     } catch (error) {
         console.error('Payment failed:', error);
-        showPaymentStatus('failed', null, error.message);
+        showPaymentStatus('failed', null, error.message || 'Transaction failed');
     }
 }
 
