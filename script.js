@@ -644,6 +644,9 @@ function openBreakPaymentModal(breakName, price, breakId) {
     
     updatePaymentCalculations();
     
+    // Check wallet connection status and update modal
+    updatePaymentModalWalletStatus();
+    
     // Show modal
     const modal = document.getElementById('breakPaymentModal');
     modal.classList.add('active');
@@ -712,80 +715,69 @@ function switchPaymentTab(tab) {
     document.getElementById('fiatPayment').classList.toggle('hidden', tab !== 'fiat');
 }
 
-async function connectBSCWallet() {
+async function connectGlobalWallet() {
     try {
-        // Check if MetaMask or other Web3 wallet is installed
-        if (typeof window.ethereum === 'undefined') {
-            alert('Please install MetaMask or another Web3 wallet to pay with crypto');
+        // Check if Web3 is available
+        if (!window.TCGWeb3) {
+            alert('Web3 not initialized. Please refresh the page.');
             return;
         }
         
-        // Request account access
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        // Connect wallet using Web3 integration
+        await window.TCGWeb3.connectWallet();
         
-        if (accounts.length === 0) {
-            alert('No accounts found. Please unlock your wallet.');
-            return;
-        }
-        
-        // Check if we're on BSC
-        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-        const currentChainId = parseInt(chainId, 16);
-        
-        if (currentChainId !== BSCState.chainId) {
-            // Try to switch to BSC
-            try {
-                await window.ethereum.request({
-                    method: 'wallet_switchEthereumChain',
-                    params: [{ chainId: '0x38' }] // BSC Mainnet
-                });
-            } catch (switchError) {
-                // If BSC is not added, add it
-                if (switchError.code === 4902) {
-                    await window.ethereum.request({
-                        method: 'wallet_addEthereumChain',
-                        params: [{
-                            chainId: '0x38',
-                            chainName: 'Binance Smart Chain',
-                            nativeCurrency: {
-                                name: 'BNB',
-                                symbol: 'BNB',
-                                decimals: 18
-                            },
-                            rpcUrls: ['https://bsc-dataseed.binance.org/'],
-                            blockExplorerUrls: ['https://bscscan.com']
-                        }]
-                    });
-                } else {
-                    throw switchError;
-                }
-            }
-        }
-        
-        // Update state
+        // Update global state
         BSCState.isConnected = true;
-        BSCState.address = accounts[0];
+        BSCState.address = window.TCGWeb3.getAddress();
         
-        // Update UI
-        document.getElementById('walletStatus').style.display = 'flex';
-        document.getElementById('walletAddress').textContent = 
-            BSCState.address.substring(0, 6) + '...' + BSCState.address.substring(38);
-        document.getElementById('connectBSCWallet').textContent = 'Wallet Connected';
-        document.getElementById('connectBSCWallet').disabled = true;
+        // Update banner button
+        const globalBtn = document.getElementById('globalConnectWallet');
+        if (globalBtn) {
+            globalBtn.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 6v6l4 2"/>
+                </svg>
+                ${BSCState.address.substring(0, 6)}...${BSCState.address.substring(38)}
+            `;
+            globalBtn.disabled = true;
+            globalBtn.style.background = 'var(--success)';
+        }
         
-        // Show token selection
-        document.getElementById('tokenSelection').style.display = 'block';
+        // Update payment modal if open
+        updatePaymentModalWalletStatus();
         
-        // Fetch balances (mock for now)
+        // Fetch token balances
         await fetchTokenBalances();
-        
-        // Enable pay button
-        document.getElementById('payWithCrypto').disabled = false;
         
     } catch (error) {
         console.error('Wallet connection failed:', error);
         alert('Failed to connect wallet: ' + error.message);
     }
+}
+
+// Update payment modal wallet status
+function updatePaymentModalWalletStatus() {
+    const walletNotConnected = document.getElementById('walletNotConnected');
+    const walletConnected = document.getElementById('walletConnected');
+    const walletStatus = document.getElementById('walletStatus');
+    const walletAddress = document.getElementById('walletAddress');
+    const tokenSelection = document.getElementById('tokenSelection');
+    const payButton = document.getElementById('payWithCrypto');
+    
+    if (BSCState.isConnected && BSCState.address) {
+        if (walletNotConnected) walletNotConnected.style.display = 'none';
+        if (walletConnected) walletConnected.style.display = 'block';
+        if (walletStatus) walletStatus.style.display = 'flex';
+        if (walletAddress) walletAddress.textContent = BSCState.address.substring(0, 6) + '...' + BSCState.address.substring(38);
+        if (tokenSelection) tokenSelection.style.display = 'block';
+        if (payButton) payButton.disabled = false;
+    }
+}
+
+// Legacy function for compatibility
+async function connectBSCWallet() {
+    await connectGlobalWallet();
 }
 
 async function fetchTokenBalances() {
@@ -951,6 +943,7 @@ window.openBreakPaymentModal = openBreakPaymentModal;
 window.closeBreakPaymentModal = closeBreakPaymentModal;
 window.adjustPackQuantity = adjustPackQuantity;
 window.switchPaymentTab = switchPaymentTab;
+window.connectGlobalWallet = connectGlobalWallet;
 window.connectBSCWallet = connectBSCWallet;
 window.selectToken = selectToken;
 window.processCryptoPayment = processCryptoPayment;

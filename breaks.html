@@ -25,7 +25,14 @@
                 <li><a href="dashboard.html">Dashboard</a></li>
                 <li><a href="transparency.html">Transparency</a></li>
             </ul>
-            <a href="breaks.html" class="nav-cta">Join a Break</a>
+            <button class="nav-cta" id="globalConnectWallet" onclick="connectGlobalWallet()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                    <path d="M7 8h.01"/>
+                    <path d="M17 8h.01"/>
+                </svg>
+                Connect Wallet
+            </button>
             <button class="mobile-menu-btn">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -392,18 +399,13 @@
                     </div>
 
                     <div class="payment-content" id="cryptoPayment">
-                        <div class="wallet-section">
-                            <p class="wallet-info">Connect your BSC wallet to pay with USDC or USDT</p>
-                            <button class="btn-secondary btn-full" id="connectBSCWallet" onclick="connectBSCWallet()">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="2" y="4" width="20" height="16" rx="2"/>
-                                    <path d="M7 8h.01"/>
-                                    <path d="M17 8h.01"/>
-                                    <path d="M7 16h.01"/>
-                                </svg>
-                                Connect BSC Wallet
-                            </button>
-                            <div class="wallet-status" id="walletStatus" style="display: none;">
+                        <div class="wallet-section" id="walletNotConnected">
+                            <p class="wallet-info" style="text-align: center; padding: 2rem; background: var(--bg-tertiary); border-radius: 12px;">
+                                ⚠️ Please connect your wallet using the "Connect Wallet" button in the top navigation bar first.
+                            </p>
+                        </div>
+                        <div class="wallet-section" id="walletConnected" style="display: none;">
+                            <div class="wallet-status" id="walletStatus">
                                 <span class="wallet-address" id="walletAddress"></span>
                                 <span class="wallet-balance" id="walletBalance"></span>
                             </div>
