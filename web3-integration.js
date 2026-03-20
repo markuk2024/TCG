@@ -1253,3 +1253,11 @@ window.TCGWeb3 = {
     userAddress: () => userAddress,
     userBalances: () => userBalances
 };
+
+// Auto-initialize Web3 when script loads
+console.log('Web3 integration script loaded, initializing...');
+initWeb3().then(() => {
+    console.log('✅ Web3 initialized successfully');
+}).catch(error => {
+    console.error('❌ Web3 initialization failed:', error);
+});
