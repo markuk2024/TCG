@@ -185,29 +185,20 @@ async function initWeb3() {
 }
 
 /**
- * Load contract addresses from deployed-addresses.json
+ * Load contract addresses - BSC Testnet deployment
  */
 async function loadContractAddresses() {
-    try {
-        const response = await fetch('deployed-addresses.json');
-        if (response.ok) {
-            const data = await response.json();
-            CONTRACT_ADDRESSES = {
-                vaultToken: data.vaultToken,
-                eVAULT: data.eVAULT,
-                staking: data.staking,
-                rewardsPool: data.rewardsPool,
-                protocol: data.protocol,
-                usdc: data.usdc || BSC_TOKENS.USDC,
-                usdt: data.usdt || BSC_TOKENS.USDT
-            };
-        } else {
-            // Fallback to hardcoded test addresses if file not found
-            console.warn('deployed-addresses.json not found, using fallback');
-        }
-    } catch (error) {
-        console.warn('Error loading addresses:', error);
-    }
+    // Hardcoded BSC Testnet addresses from deployment
+    CONTRACT_ADDRESSES = {
+        vaultToken: "0x03F7E6C01A2A6eb760EBac71B4eA960e45049B90",
+        eVAULT: "0x950fC1bcC5f1Af97B3EBa49E4fCCeF1F12808FA2",
+        staking: "0x35C2e44085A616808A61875D18E6ef70A4a33817",
+        rewardsPool: "0x774b66fd788cC19fB294471C80E6C3bA21D52ccC",
+        protocol: "0x384e2678C0cfA21D0cb29AC27c104D422eBB946F",
+        usdc: "0x0D78B96983D8483fa01A955FFB405873d0Db844b",
+        usdt: "0x3433dA6272AC6740a8a8b9c010a2086EDf3fA75a"
+    };
+    console.log('Contract addresses loaded for BSC Testnet');
 }
 
 /**
