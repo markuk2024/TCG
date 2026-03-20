@@ -807,34 +807,64 @@ async function connectBSCWallet() {
 }
 
 async function fetchTokenBalances() {
-    if (!BSCState.address || !window.TCGWeb3) {
-        console.warn('Cannot fetch balances: wallet not connected or Web3 not initialized');
+    console.log('fetchTokenBalances called', { 
+        address: BSCState.address, 
+        web3Available: !!window.TCGWeb3 
+    });
+    
+    if (!BSCState.address) {
+        console.warn('Cannot fetch balances: wallet address not set');
+        return;
+    }
+    
+    if (!window.TCGWeb3) {
+        console.warn('Cannot fetch balances: Web3 not initialized');
         return;
     }
     
     try {
-        // Fetch actual token balances from the blockchain
+        console.log('Fetching USDC balance for:', BSCState.address);
         const usdcBalance = await window.TCGWeb3.getTokenBalance('USDC', BSCState.address);
-        const usdtBalance = await window.TCGWeb3.getTokenBalance('USDT', BSCState.address);
+        console.log('USDC balance raw:', usdcBalance);
         
-        // Convert from wei to readable format (18 decimals)
+        console.log('Fetching USDT balance for:', BSCState.address);
+        const usdtBalance = await window.TCGWeb3.getTokenBalance('USDT', BSCState.address);
+        console.log('USDT balance raw:', usdtBalance);
+        
+        // Convert from string to number
         BSCState.usdcBalance = parseFloat(usdcBalance);
         BSCState.usdtBalance = parseFloat(usdtBalance);
+        
+        console.log('Balances parsed:', { 
+            usdc: BSCState.usdcBalance, 
+            usdt: BSCState.usdtBalance 
+        });
         
         // Update UI elements if they exist
         const usdcBalanceEl = document.getElementById('usdcBalance');
         const usdtBalanceEl = document.getElementById('usdtBalance');
         const walletBalanceEl = document.getElementById('walletBalance');
         
-        if (usdcBalanceEl) usdcBalanceEl.textContent = BSCState.usdcBalance.toLocaleString();
-        if (usdtBalanceEl) usdtBalanceEl.textContent = BSCState.usdtBalance.toLocaleString();
+        if (usdcBalanceEl) {
+            usdcBalanceEl.textContent = BSCState.usdcBalance.toLocaleString();
+            console.log('Updated usdcBalance element:', usdcBalanceEl.textContent);
+        }
+        if (usdtBalanceEl) {
+            usdtBalanceEl.textContent = BSCState.usdtBalance.toLocaleString();
+            console.log('Updated usdtBalance element:', usdtBalanceEl.textContent);
+        }
         if (walletBalanceEl) {
             walletBalanceEl.textContent = `USDC: ${BSCState.usdcBalance.toLocaleString()} | USDT: ${BSCState.usdtBalance.toLocaleString()}`;
+            console.log('Updated walletBalance element:', walletBalanceEl.textContent);
         }
         
-        console.log('Token balances fetched:', { usdc: BSCState.usdcBalance, usdt: BSCState.usdtBalance });
+        console.log('✅ Token balances fetched successfully');
     } catch (error) {
-        console.error('Error fetching token balances:', error);
+        console.error('❌ Error fetching token balances:', error);
+        console.error('Error details:', {
+            message: error.message,
+            stack: error.stack
+        });
         // Fallback to 0 if fetch fails
         BSCState.usdcBalance = 0;
         BSCState.usdtBalance = 0;
