@@ -1146,6 +1146,18 @@ async function getTokenBalance(tokenSymbol, address) {
     }
     
     try {
+        // Check network first
+        const network = await provider.getNetwork();
+        const BSC_TESTNET_CHAIN_ID = 97;
+        
+        console.log('Current network for balance check:', network.chainId);
+        
+        if (network.chainId !== BSC_TESTNET_CHAIN_ID) {
+            console.error(`Wrong network! Expected BSC Testnet (97), got ${network.chainId}`);
+            alert(`Please switch to BSC Testnet in MetaMask. Currently on network ${network.chainId}`);
+            return '0';
+        }
+        
         let tokenAddress;
         
         // Get token contract address
