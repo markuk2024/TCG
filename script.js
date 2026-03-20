@@ -597,17 +597,39 @@ window.clearCart = clearCart;
 
 // ================= BREAK PAYMENT SYSTEM =================
 
-// Wallet State
+// Wallet State - persisted in localStorage
 const BSCState = {
-    isConnected: false,
-    address: null,
+    isConnected: localStorage.getItem('walletConnected') === 'true',
+    address: localStorage.getItem('walletAddress') || null,
     selectedToken: 'USDC',
-    chainId: 56, // BSC Mainnet
+    chainId: 97, // BSC Testnet
     usdcBalance: 0,
     usdtBalance: 0,
     currentBreak: null,
     packQuantity: 1
 };
+
+// Restore wallet connection on page load
+document.addEventListener('DOMContentLoaded', function() {
+    if (BSCState.isConnected && BSCState.address) {
+        // Update banner button
+        const globalBtn = document.getElementById('globalConnectWallet');
+        if (globalBtn) {
+            globalBtn.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 6v6l4 2"/>
+                </svg>
+                ${BSCState.address.substring(0, 6)}...${BSCState.address.substring(38)}
+            `;
+            globalBtn.disabled = true;
+            globalBtn.style.background = 'var(--success)';
+        }
+        
+        // Update payment modal if it exists
+        updatePaymentModalWalletStatus();
+    }
+});
 
 // BSC Contract Addresses (Mainnet)
 const BSC_CONTRACTS = {
@@ -729,6 +751,10 @@ async function connectGlobalWallet() {
         // Update global state
         BSCState.isConnected = true;
         BSCState.address = window.TCGWeb3.getAddress();
+        
+        // Save to localStorage for persistence
+        localStorage.setItem('walletConnected', 'true');
+        localStorage.setItem('walletAddress', BSCState.address);
         
         // Update banner button
         const globalBtn = document.getElementById('globalConnectWallet');
