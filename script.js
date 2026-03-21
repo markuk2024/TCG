@@ -999,6 +999,9 @@ function showPaymentStatus(status, txHash = null, errorMessage = null) {
         
         // Close payment modal
         closeBreakPaymentModal();
+        
+        // Update wallet UI to ensure proper state
+        updateWalletUI();
     } else if (status === 'failed') {
         icon.textContent = '❌';
         title.textContent = 'Payment Failed';
