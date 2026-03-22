@@ -810,41 +810,58 @@ async function getBreakTypes() {
 }
 
 /**
- * Purchase break packs with stablecoin
+ * Purchase break packs with USDC/USDT
  */
-async function purchaseBreakPacks(breakId, quantity, paymentToken) {
+async function purchaseBreakPacks(breakId, quantity, paymentToken, packPrice) {
     if (!signer) {
         showNotification('Please connect wallet first', 'error');
         return;
     }
     
     try {
-        // Get break type info to determine pack price
-        const breakType = await contracts.protocol.breakTypes(breakId);
-        const packPrice = breakType.packPrice;
-        
         const token = paymentToken === 'USDC' ? contracts.usdc : contracts.usdt;
         const tokenAddress = paymentToken === 'USDC' ? CONTRACT_ADDRESSES.usdc : CONTRACT_ADDRESSES.usdt;
         
-        const totalCost = packPrice.mul(quantity);
+        // Convert pack price to wei (assuming 18 decimals for USDC/USDT on testnet)
+        const packPriceWei = ethers.utils.parseUnits(packPrice.toString(), 18);
+        const totalCost = packPriceWei.mul(quantity);
+        
+        console.log('Purchase details:', {
+            breakId,
+            quantity,
+            paymentToken,
+            packPrice,
+            packPriceWei: packPriceWei.toString(),
+            totalCost: totalCost.toString(),
+            tokenAddress
+        });
         
         // Approve protocol to spend tokens
+        console.log('Approving token spend...');
         const approveTx = await token.approve(CONTRACT_ADDRESSES.protocol, totalCost);
         await approveTx.wait();
+        console.log('Token approved');
         
-        // Purchase (packPrice comes from contract now)
+        // Purchase break packs
+        console.log('Calling purchaseBreakPacks on contract...');
         const tx = await contracts.protocol.purchaseBreakPacks(
             tokenAddress,
             breakId,
-            quantity
+            quantity,
+            packPriceWei
         );
+        console.log('Transaction sent:', tx.hash);
         await tx.wait();
+        console.log('Transaction confirmed');
         
         showNotification('Purchase successful!', 'success');
         await loadUserBalances();
+        
+        return tx.hash;
     } catch (error) {
         console.error('Purchase error:', error);
         showNotification('Purchase failed: ' + error.message, 'error');
+        throw error;
     }
 }
 

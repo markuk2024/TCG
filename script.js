@@ -932,9 +932,10 @@ async function processCryptoPayment() {
         const breakId = BSCState.currentBreak || 0; // Default to first break type
         const quantity = BSCState.packQuantity || 1;
         const paymentToken = BSCState.selectedToken; // 'USDC' or 'USDT'
+        const packPrice = currentBreakData.price; // Get pack price from current break data
         
         // Call the smart contract to purchase break packs
-        const txHash = await window.TCGWeb3.purchaseBreakPacks(breakId, quantity, paymentToken);
+        const txHash = await window.TCGWeb3.purchaseBreakPacks(breakId, quantity, paymentToken, packPrice);
         
         // Show success with actual transaction hash
         showPaymentStatus('success', txHash);
