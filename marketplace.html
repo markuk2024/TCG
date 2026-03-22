@@ -461,7 +461,7 @@
                 if (paymentToken === 'evault') {
                     await window.TCGWeb3.purchaseBreakPacksWithEVAULT(currentBreakId, quantity);
                 } else {
-                    await window.TCGWeb3.purchaseBreakPacks(currentBreakId, quantity, paymentToken.toUpperCase());
+                    await window.TCGWeb3.purchaseBreakPacks(currentBreakId, quantity, paymentToken.toUpperCase(), currentBreakPrice);
                 }
                 alert('Purchase successful!');
                 closeBreakModal();
